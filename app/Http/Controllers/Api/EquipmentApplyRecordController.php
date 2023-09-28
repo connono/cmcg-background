@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use App\Http\Resources\EquipmentApplyRecordResource;
 use App\Http\Requests\Api\EquipmentApplyRecordRequest;
 use Illuminate\Support\Str;
-use App\Handlers\ImageUploadHandler;
 use Illuminate\Support\Facades\Storage;
 
 class EquipmentApplyRecordController extends Controller
@@ -54,7 +53,7 @@ class EquipmentApplyRecordController extends Controller
         return $count;
     }
 
-    public function store(EquipmentApplyRecordRequest $request, ImageUploadHandler $uploader){
+    public function store(EquipmentApplyRecordRequest $request){
         if(!\Cache::has('serial_number_'.$request->serial_number)){
             return response()->json([
                 'error' => 'false'
@@ -67,17 +66,11 @@ class EquipmentApplyRecordController extends Controller
             'count' => $request->count,
             'budget' => $request->budget,
             'apply_type' => $request->apply_type,
+            'apply_picture' => $request->apply_picture,
         ]);
         
         $record->serial_number = $request->serial_number;
         $record->status = '1';
-
-        if ($request->apply_picture) {
-            $result = $uploader->save($request->apply_picture, 'apply', $request->serial_number);
-            if ($result) {
-                $record->apply_picture = $result['path'];
-            }
-        }
 
         $record->save();
 
@@ -86,74 +79,26 @@ class EquipmentApplyRecordController extends Controller
         return new EquipmentApplyRecordResource($record);
     }
 
-    public function update(EquipmentApplyRecordRequest $request, $method, EquipmentApplyRecord $record, ImageUploadHandler $uploader){
+    public function update(EquipmentApplyRecordRequest $request, $method, EquipmentApplyRecord $record){
         switch($request->method){
             case 'survey':
-                $attributes = $request->only(['survey_date','purchase_type','survey_record','meeting_record']);
-                if ($request->survey_picture) {
-                    $result = $uploader->save($request->survey_picture, 'survey', $request->serial_number);
-                    if ($result) {
-                        $attributes['survey_picture'] = $result['path'];
-                    }
-                }
+                $attributes = $request->only(['survey_date','purchase_type','survey_record','meeting_record', 'survey_picture']);
                 $attributes['status'] = '2';
                 break;
             case 'approve':
-                $attributes = $request->only(['approve_date','execute_date']);
-                if ($request->approve_picture) {
-                    $result = $uploader->save($request->approve_picture, 'approve', $request->serial_number);
-                    if ($result) {
-                        $attributes['approve_picture'] = $result['path'];
-                    }
-                }
+                $attributes = $request->only(['approve_date','execute_date', 'approve_picture']);
                 $attributes['status'] = $record->purchase_type == 1 ? '3' : '4';
                 break;
             case 'tender':
-                $attributes = $request->only(['tender_date','tender_out_date']);
-                if ($request->tender_file) {
-                    $result = $uploader->save($request->tender_file, 'tender_file', $request->serial_number);
-                    if ($result) {
-                        $attributes['tender_file'] = $result['path'];
-                    }
-                }
-                if ($request->tender_boardcast_file) {
-                    $result = $uploader->save($request->tender_boardcast_file, 'tender_boardcast_file', $request->serial_number);
-                    if ($result) {
-                        $attributes['tender_boardcast_file'] = $result['path'];
-                    }
-                }
-                if ($request->bid_winning_file) {
-                    $result = $uploader->save($request->bid_winning_file, 'bid_winning_file', $request->serial_number);
-                    if ($result) {
-                        $attributes['bid_winning_file'] = $result['path'];
-                    }
-                }
-                if ($request->send_tender_file) {
-                    $result = $uploader->save($request->send_tender_file, 'send_tender_file', $request->serial_number);
-                    if ($result) {
-                        $attributes['send_tender_file'] = $result['path'];
-                    }
-                }
+                $attributes = $request->only(['tender_date','tender_out_date', 'tender_file', 'tender_boardcast_file', 'bid_winning_file', 'send_tender_file']);
                 $attributes['status'] = '4';
                 break;
             case 'purchase':
-                $attributes = $request->only(['purchase_date','arrive_date','price']);
-                if ($request->purchase_picture) {
-                    $result = $uploader->save($request->purchase_picture, 'purchase', $request->serial_number);
-                    if ($result) {
-                        $attributes['purchase_picture'] = $result['path'];
-                    }
-                }
+                $attributes = $request->only(['purchase_date','arrive_date','price', 'purchase_picture']);
                 $attributes['status'] = '5';
                 break;
             case 'install':
-                $attributes = $request->only(['install_date']);
-                if ($request->install_picture) {
-                    $result = $uploader->save($request->install_picture, 'survey', $request->serial_number);
-                    if ($result) {
-                        $attributes['install_picture'] = $result['path'];
-                    }
-                }
+                $attributes = $request->only(['install_date', 'install_picture']);
                 $attributes['status'] = '6';
                 break;
         }

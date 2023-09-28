@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\PaymentPlan;
 use App\Http\Resources\PaymentPlanResource;
-use App\Handlers\ImageUploadHandler;
 
 class PaymentPlansController extends Controller
 {
@@ -22,7 +21,7 @@ class PaymentPlansController extends Controller
         return new PaymentPlanResource($plan);
     }
 
-    public function store(Request $request, ImageUploadHandler $uploader){
+    public function store(Request $request){
         $plan = PaymentPlan::create([
             'contract_name' => $request->contract_name,
             'department' => $request->department,
@@ -31,13 +30,8 @@ class PaymentPlansController extends Controller
             'category' => $request->category,
             'finish_date' => $request->finish_date,
             'contract_date' => $request->contract_date,
+            'payment_file' => $request->payment_file,
         ]);
-        if ($request->payment_file) {
-            $result = $uploader->save($request->payment_file, 'pay', $request->department);
-            if ($result) {
-                $plan->payment_file = $result['path'];
-            }
-        }
         $plan->records_count = 0;
         $plan->assessments_count = 0;
         $plan->save();

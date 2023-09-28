@@ -8,7 +8,6 @@ use App\Models\PaymentRecord;
 use App\Models\PaymentPlan;
 use App\Models\Notification;
 use App\Http\Resources\PaymentRecordResource;
-use App\Handlers\ImageUploadHandler;
 
 class PaymentRecordsController extends Controller
 {
@@ -23,7 +22,7 @@ class PaymentRecordsController extends Controller
         return new PaymentRecordResource($record);
     }
 
-    public function store(Request $request, ImageUploadHandler $uploader){
+    public function store(Request $request){
         $record = PaymentRecord::create([
             'contract_name' => $request->contract_name,
             'department' => $request->department,
@@ -43,17 +42,11 @@ class PaymentRecordsController extends Controller
         return new PaymentRecordResource($record);
     }
 
-    public function update(Request $request, PaymentRecord $record, ImageUploadHandler $uploader){
+    public function update(Request $request, PaymentRecord $record){
         $plan = PaymentPlan::find($request->plan_id);
         switch($request->method) {
             case 'apply':
-                $attributes = $request->only(['assessment']);
-                if ($request->payment_voucher_file) {
-                    $result = $uploader->save($request->payment_voucher_file, 'pay', $request->department);
-                    if ($result) {
-                        $attributes['payment_voucher_file'] = $result['path'];
-                    }
-                }
+                $attributes = $request->only(['assessment', 'payment_voucher_file']);
                 $plan->update([
                     'status' => 'audit',
                     'assessment' => $request->assessment,
@@ -80,13 +73,7 @@ class PaymentRecordsController extends Controller
                 $plan->notification()->save($notification);
                 break;
             case 'process':
-                $attributes = $request->only(['assessment_date']);
-                if ($request->payment_file) {
-                    $result = $uploader->save($request->payment_file, 'pay', $record->department);
-                    if ($result) {
-                        $attributes['payment_file'] = $result['path'];
-                    }
-                }
+                $attributes = $request->only(['assessment_date', 'payment_file']);
                 $assessments_count = $plan->assessments_count + $record->assessment;
                 $records_count = $plan->records_count + 1;
                 $plan->update([
