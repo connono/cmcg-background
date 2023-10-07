@@ -35,7 +35,6 @@ class PaymentRecordsController extends Controller
         
         $plan->records()->save($record);
         $plan->update([
-            'status' => 'apply',
             'next_date' => $request->next_date,
             'current_payment_record_id' => $record->id,
         ]);
@@ -87,7 +86,7 @@ class PaymentRecordsController extends Controller
                     'permission' => $plan->department,
                     'title' => $plan->contract_name,
                     'body' => json_encode($plan),
-                    'link' => '/paymentMonitor/detail#process&' . $plan->id . '&' . $plan->current_payment_record_id,
+                    'link' => '/paymentMonitor',
                 ]);
                 $plan->notification()->delete();
                 $plan->notification()->save($notification);

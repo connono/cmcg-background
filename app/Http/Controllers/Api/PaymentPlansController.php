@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\PaymentPlan;
+use App\Models\Department;
 use App\Http\Resources\PaymentPlanResource;
 
 class PaymentPlansController extends Controller
@@ -22,9 +23,10 @@ class PaymentPlansController extends Controller
     }
 
     public function store(Request $request){
+        $department = Department::where('name', $request->department)->first();
         $plan = PaymentPlan::create([
             'contract_name' => $request->contract_name,
-            'department' => $request->department,
+            'department' => $department->label,
             'company' => $request->company,
             'is_pay' => $request->is_pay,
             'category' => $request->category,

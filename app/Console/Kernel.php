@@ -4,6 +4,8 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Models\Notification; 
+use App\Models\PaymentPlan;
 
 class Kernel extends ConsoleKernel
 {
@@ -15,7 +17,22 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->call(function (){
+            $plans = PaymentPlan::where('status', 'wait')->whereNotNull('next_date')->whereYear('next_date', date('Y'))->whereMonth('next_date', date('m'))->get();
+            foreach($plans as $plan) {
+                $plan->update([
+                    'status' => 'apply',
+                ]);
+                $notification = Notification::create([
+                    'permission' => $plan->department,
+                    'title' => $plan->contract_name,
+                    'body' => json_encode($plan),
+                    'link' => '/paymentMonitor/detail#apply&' . $plan->id . '&' . $plan->current_payment_record_id,
+                ]);
+                $plan->notification()->delete();
+                $plan->notification()->save($notification);
+            }
+        })->everyMinute();
     }
 
     /**
