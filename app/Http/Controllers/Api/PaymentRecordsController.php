@@ -51,7 +51,7 @@ class PaymentRecordsController extends Controller
                     'assessment' => $request->assessment,
                 ]);
                 $notification = Notification::create([
-                    'permission' => 'can_audit_paymentplan',
+                    'permission' => 'can_audit_payment_record',
                     'title' => $plan->contract_name,
                     'body' => json_encode($plan),
                     'link' => '/paymentMonitor/detail#audit&' . $plan->id . '&' . $plan->current_payment_record_id,
@@ -63,7 +63,7 @@ class PaymentRecordsController extends Controller
                 $attributes = [];
                 $plan->update(['status' => 'process']);
                 $notification = Notification::create([
-                    'permission' => 'can_process_paymentplan',
+                    'permission' => 'can_process_payment_record',
                     'title' => $plan->contract_name,
                     'body' => json_encode($plan),
                     'link' => '/paymentMonitor/detail#process&' . $plan->id . '&' . $plan->current_payment_record_id,
