@@ -12,7 +12,10 @@ class PaymentPlansController extends Controller
 {
     public function index(Request $request, PaymentPlan $plan){
         $query = $plan->query();
-        $plans = $query->paginate();
+        if ($request->department && $request->department !== '财务科') {
+            $query = $query->where('department', $request->department);
+        }
+        $plans = $query->get();
         
         return  PaymentPlanResource::collection($plans);
     }
@@ -23,10 +26,9 @@ class PaymentPlansController extends Controller
     }
 
     public function store(Request $request){
-        $department = Department::where('name', $request->department)->first();
         $plan = PaymentPlan::create([
             'contract_name' => $request->contract_name,
-            'department' => $department->label,
+            'department' => $request->department,
             'company' => $request->company,
             'is_pay' => $request->is_pay,
             'category' => $request->category,

@@ -100,6 +100,10 @@ class PaymentRecordsController extends Controller
     public function back(Request $request, PaymentRecord $record) {
         $plan = PaymentPlan::find($request->plan_id);
         $plan->update(['status' => 'apply']);
+        $record->update([
+            'assessment' => null,
+            'payment_voucher_file' => null,
+        ]);
         $notification = Notification::create([
             'permission' => $plan->department,
             'title' => $plan->contract_name,
