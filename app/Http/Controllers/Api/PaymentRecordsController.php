@@ -12,7 +12,7 @@ use App\Http\Resources\PaymentRecordResource;
 class PaymentRecordsController extends Controller
 {
     public function index(Request $request, PaymentPlan $plan){
-        $records = $plan->records;
+        $records = $plan->records->diff(PaymentRecord::whereNull('assessment_date')->get());
         
         return  PaymentRecordResource::collection($records);
     }

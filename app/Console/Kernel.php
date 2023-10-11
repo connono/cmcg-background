@@ -32,7 +32,7 @@ class Kernel extends ConsoleKernel
                 $plan->notification()->delete();
                 $plan->notification()->save($notification);
             }
-        })->everyMinute();
+        })->daily();
     }
 
     /**

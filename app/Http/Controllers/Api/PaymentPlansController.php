@@ -42,9 +42,17 @@ class PaymentPlansController extends Controller
 
         return new PaymentPlanResource($plan);
     }
+
+    public function stop(Request $request, PaymentPlan $plan) {
+        $plan->update([
+            'status' => 'stop'
+        ]);
+        return response()->json([])->setStatusCode(201);
+    }
     
-    public function delete(Request $request, PaymentPlan $plan){
+    public function delete(Request $request, PaymentPlan $plan) {
         $plan->delete();
+        $plan->records->delete();
         return response()->json([])->setStatusCode(201);
     }
 }

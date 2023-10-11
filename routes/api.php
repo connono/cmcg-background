@@ -88,6 +88,8 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('payment.plans.getItem');
     Route::post('payment/plans/store',[PaymentPlansController::class, 'store'])
         ->name('payment.plans.store');
+    Route::get('payment/plans/stop/{plan}',[PaymentPlansController::class, 'stop'])
+        ->name('payment.plans.stop');
     Route::delete('payment/plans/delete/{plan}',[PaymentPlansController::class, 'delete'])
         ->name('payment.plans.delete');
     Route::get('payment/records/index/{plan}',[PaymentRecordsController::class, 'index'])
