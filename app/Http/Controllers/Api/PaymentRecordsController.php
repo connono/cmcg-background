@@ -38,6 +38,7 @@ class PaymentRecordsController extends Controller
             'next_date' => $request->next_date,
             'current_payment_record_id' => $record->id,
         ]);
+        if($plan->notification()) $plan->notification()->delete();
         return new PaymentRecordResource($record);
     }
 

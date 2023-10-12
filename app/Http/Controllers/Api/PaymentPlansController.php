@@ -47,6 +47,7 @@ class PaymentPlansController extends Controller
         $plan->update([
             'status' => 'stop'
         ]);
+        $plan->notification()->delete();
         return response()->json([])->setStatusCode(201);
     }
     
