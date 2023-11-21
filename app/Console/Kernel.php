@@ -6,6 +6,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Models\Notification; 
 use App\Models\PaymentPlan;
+use App\Models\PaymentProcess;
 
 class Kernel extends ConsoleKernel
 {
@@ -32,7 +33,23 @@ class Kernel extends ConsoleKernel
                 $plan->notification()->delete();
                 $plan->notification()->save($notification);
             }
-        })->daily();
+        })->everyMinute();
+        $schedule->call(function (){
+            $processes = PaymentProcess::where('status', 'wait')->whereNotNull('next_date')->whereYear('next_date', date('Y'))->whereMonth('next_date', date('m'))->get();
+            foreach($processes as $process) {
+                $process->update([
+                    'status' => 'apply',
+                ]);
+                $notification = Notification::create([
+                    'permission' => $process->department,
+                    'title' => $process->contract_name,
+                    'body' => json_encode($process),
+                    'link' => '/paymentProcess/detail#apply&' . $process->id . '&' . $process->current_payment_record_id,
+                ]);
+                $process->notification()->delete();
+                $process->notification()->save($notification);
+            }
+        })->everyMinute();
     }
 
     /**

@@ -15,11 +15,8 @@ class InstrumentApplyRecord extends Model
         'department',
         'count',
         'budget',
-
         'survey_date',
-
-        'price',
-        
+        'price',       
         'install_date'
     ];
 

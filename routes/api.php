@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\EquipmentApplyRecordController;
 use App\Http\Controllers\Api\InstrumentApplyRecordController;
 use App\Http\Controllers\Api\PermissionsController;
 use App\Http\Controllers\Api\PaymentPlansController;
+use App\Http\Controllers\Api\PaymentProcessesController;
 use App\Http\Controllers\Api\PaymentRecordsController;
 use App\Http\Controllers\Api\NotificationsController;
 use App\Http\Controllers\Api\DepartmentController;
@@ -92,8 +93,20 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('payment.plans.stop');
     Route::delete('payment/plans/delete/{plan}',[PaymentPlansController::class, 'delete'])
         ->name('payment.plans.delete');
-    Route::get('payment/records/index/{plan}',[PaymentRecordsController::class, 'index'])
-        ->name('payment.records.index');
+    Route::get('payment/processes/index',[PaymentProcessesController::class, 'index'])
+        ->name('payment.processes.index');
+    Route::get('payment/processes/getItem',[PaymentProcessesController::class, 'getItem'])
+        ->name('payment.processes.getItem');
+    Route::post('payment/processes/store',[PaymentProcessesController::class, 'store'])
+        ->name('payment.processes.store');
+    Route::get('payment/processes/stop/{plan}',[PaymentProcessesController::class, 'stop'])
+        ->name('payment.processes.stop');
+    Route::delete('payment/processes/delete/{plan}',[PaymentProcessesController::class, 'delete'])
+        ->name('payment.processes.delete');
+    Route::get('payment/records/planIndex/{plan}',[PaymentRecordsController::class, 'planIndex'])
+        ->name('payment.records.planIndex');
+    Route::get('payment/records/processIndex/{process}',[PaymentRecordsController::class, 'processIndex'])
+        ->name('payment.records.processIndex');
     Route::get('payment/records/getItem',[PaymentRecordsController::class, 'getItem'])
         ->name('equipment.item');
     Route::post('payment/records/store',[PaymentRecordsController::class, 'store'])
