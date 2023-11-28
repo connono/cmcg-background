@@ -12,7 +12,9 @@ class DepartmentController extends Controller
 {
     public function index(Request $request, Department $department){
         $query = $department->query();
-        $departments = $query->paginate();
-        return $departments;
+        $departments = $query->get();
+        return response()->json([
+            'data' => $departments,
+        ])->setStatusCode(201);
     }
 }

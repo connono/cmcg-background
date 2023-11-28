@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\EquipmentApplyRecord;
+use App\Models\Department;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Resources\EquipmentApplyRecordResource;
@@ -15,6 +16,22 @@ class EquipmentApplyRecordController extends Controller
 
     public function index(Request $request, EquipmentApplyRecord $record){
         $query = $record->query();
+        if (!is_null($request->department)) {
+            $department = Department::where('name', $request->department)->first();
+            $query = $query->where('department', $department->label);
+        }
+        if (!is_null($request->status)) {
+            $query = $query->where('status', $request->status);
+        }
+        if (!is_null($request->equipment)) {
+            $query = $query->where('equipment', 'like', '%'.$request->equipment.'%');
+        }
+        if (!is_null($request->apply_type)) {
+            $query = $query->where('apply_type', $request->apply_type);
+        }
+        if (!is_null($request->purchase_type)) {
+            $query = $query->where('purchase_type', $request->purchase_type);
+        }
         $records = $query->paginate();
         
         return  EquipmentApplyRecordResource::collection($records);
@@ -60,15 +77,16 @@ class EquipmentApplyRecordController extends Controller
             ])->setStatusCode(500);
         }
 
+        $department = Department::where('name', $request->department)->first();
+
         $record = EquipmentApplyRecord::create([
             'equipment' => $request->equipment,
-            'department' => $request->department,
             'count' => $request->count,
             'budget' => $request->budget,
             'apply_type' => $request->apply_type,
             'apply_picture' => $request->apply_picture,
         ]);
-        
+        $record->department = $department->label;
         $record->serial_number = $request->serial_number;
         $record->status = '1';
 
