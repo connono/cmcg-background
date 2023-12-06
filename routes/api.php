@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AuthorizationController;
 use App\Http\Controllers\Api\ImagesController;
 use App\Http\Controllers\Api\EquipmentApplyRecordController;
 use App\Http\Controllers\Api\InstrumentApplyRecordController;
+use App\Http\Controllers\Api\RepairApplyRecordController;
 use App\Http\Controllers\Api\PermissionsController;
 use App\Http\Controllers\Api\PaymentPlansController;
 use App\Http\Controllers\Api\PaymentProcessesController;
@@ -67,12 +68,32 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('equipment.update');
     Route::get('instrument/index',[InstrumentApplyRecordController::class, 'index'])
         ->name('instrument.index');
+    Route::get('instrument/item',[InstrumentApplyRecordController::class, 'getItem'])
+        ->name('instrument.item');
+    Route::delete('instrument/delete/{record}',[InstrumentApplyRecordController::class, 'delete'])
+        ->name('instrument.delete');
+    Route::patch('instrument/back/{record}',[InstrumentApplyRecordController::class, 'back'])
+        ->name('instrument.back');
+    Route::get('instrument/serialNumber',[InstrumentApplyRecordController::class, 'getSerialNumber'])
+        ->name('instrument.serialNumber');
     Route::post('instrument/store',[InstrumentApplyRecordController::class, 'store'])
         ->name('instrument.store');
     Route::post('instrument/update/{method}/{record}',[InstrumentApplyRecordController::class, 'update'])
         ->name('instrument.update');
-    // Route::patch('user/read/notifications',[NotificationsController::class, 'read'])
-    //     ->name('user.notifications.read');
+    Route::get('maintain/index',[RepairApplyRecordController::class, 'index'])
+        ->name('maintain.index');
+    Route::get('maintain/item',[RepairApplyRecordController::class, 'getItem'])
+        ->name('maintain.item');
+    Route::delete('maintain/delete/{record}',[RepairApplyRecordController::class, 'delete'])
+        ->name('maintain.delete');
+    Route::patch('maintain/back/{record}',[RepairApplyRecordController::class, 'back'])
+        ->name('maintain.back');
+    Route::get('maintain/serialNumber',[RepairApplyRecordController::class, 'getSerialNumber'])
+        ->name('maintain.serialNumber');
+    Route::post('maintain/store',[RepairApplyRecordController::class, 'store'])
+        ->name('maintain.store');
+    Route::post('maintain/update/{method}/{record}',[RepairApplyRecordController::class, 'update'])
+        ->name('maintain.update');
     Route::get('permissions/{user}', [PermissionsController::class, 'index'])
         ->name('permissions.index');
     Route::get('allRoles', [PermissionsController::class, 'allRoles'])

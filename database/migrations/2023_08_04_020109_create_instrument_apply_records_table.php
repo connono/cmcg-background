@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('serial_number')->comment('申请编号');
-            //申请0-调研1-合同2-安装验收3
+            //申请0-调研1-采购2-安装验收3
             $table->enum('status',[0,1,2,3])->comment('状态');
 
             $table->string('instrument')->comment('设备名称');

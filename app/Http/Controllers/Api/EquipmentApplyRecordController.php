@@ -56,12 +56,12 @@ class EquipmentApplyRecordController extends Controller
         } else {
             $serial_number = date("Y")*10000+1;
         }
-        while(\Cache::has('serial_number_'.$serial_number)){
+        while(\Cache::has('equipment_serial_number_'.$serial_number)){
             $serial_number++;
         }
-        $cacheKey = 'serial_number_'.$serial_number;
+        $cacheKey = 'equipment_serial_number_'.$serial_number;
         $expiredAt = now()->addMinutes(60);
-        \Cache::put($cacheKey, ['serial_number'=>(string)$serial_number], $expiredAt);
+        \Cache::put($cacheKey, ['equipment_serial_number_'=>(string)$serial_number], $expiredAt);
         return response()->json([
             'serial_number' => (string)$serial_number,
             'expired_at' => $expiredAt->toDateTimeString(),
@@ -71,7 +71,7 @@ class EquipmentApplyRecordController extends Controller
     }
 
     public function store(EquipmentApplyRecordRequest $request){
-        if(!\Cache::has('serial_number_'.$request->serial_number)){
+        if(!\Cache::has('equipment_serial_number_'.$request->serial_number)){
             return response()->json([
                 'error' => 'false'
             ])->setStatusCode(500);
@@ -92,7 +92,7 @@ class EquipmentApplyRecordController extends Controller
 
         $record->save();
 
-        \Cache::forget('serial_number_'.$request->serial_number);
+        \Cache::forget('equipment_serial_number_'.$request->serial_number);
 
         return new EquipmentApplyRecordResource($record);
     }

@@ -17,7 +17,12 @@ class InstrumentApplyRecord extends Model
         'budget',
         'survey_date',
         'price',       
-        'install_date'
+        'install_date',
+        'status',
+        'apply_picture',
+        'survey_picture',
+        'purchase_picture',
+        'install_picture',
     ];
 
 
