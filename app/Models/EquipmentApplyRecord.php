@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use AdvanceRecord;
 
 class EquipmentApplyRecord extends Model
 {
     use HasFactory;
-
         
     protected $fillable = [
         'status',           // 状态
@@ -44,6 +45,13 @@ class EquipmentApplyRecord extends Model
         'purchase_picture', // 合同图片
         // 安装验收
         'install_date',     // 安装日期
-        'install_picture'   // 安装图片
+        'install_picture',   // 安装图片
+        'isAdvance',        // 是否垫付
+        'advance_status',   // 垫付状态
     ];
+
+    public function advanceRecord(): BelongsTo
+    {
+        return $this->belongsTo(AdvanceRecord::class);
+    }
 }

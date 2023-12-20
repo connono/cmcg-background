@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\PaymentProcessesController;
 use App\Http\Controllers\Api\PaymentRecordsController;
 use App\Http\Controllers\Api\NotificationsController;
 use App\Http\Controllers\Api\DepartmentController;
+use App\Http\Controllers\Api\AdvanceRecordController;
 
 
 /*
@@ -129,7 +130,7 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
     Route::get('payment/records/processIndex/{process}',[PaymentRecordsController::class, 'processIndex'])
         ->name('payment.records.processIndex');
     Route::get('payment/records/getItem',[PaymentRecordsController::class, 'getItem'])
-        ->name('equipment.item');
+        ->name('payment.getItem');
     Route::post('payment/records/store',[PaymentRecordsController::class, 'store'])
         ->name('payment.records.store');
     Route::post('payment/records/update/{record}',[PaymentRecordsController::class, 'update'])
@@ -142,6 +143,20 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('notifications.index');
     Route::get('department/index',[DepartmentController::class, 'index'])
         ->name('department.index');
+    Route::get('advance/records/index',[AdvanceRecordController::class, 'index'])
+        ->name('advance.records.index');
+    Route::get('advance/records/getItem',[AdvanceRecordController::class, 'getItem'])
+        ->name('advance.records.getItem');
+    Route::get('advance/budget/index',[AdvanceRecordController::class, 'getAdvanceBudget'])
+        ->name('advance.budget.index');
+    Route::post('advance/budget/store',[AdvanceRecordController::class, 'storeAdvanceBudget'])
+        ->name('advance.budget.store');
+    Route::post('advance/records/store',[AdvanceRecordController::class, 'store'])
+        ->name('advance.records.store');
+    Route::post('advance/records/update/{record}',[AdvanceRecordController::class, 'update'])
+        ->name('advance.records.update');
+    Route::delete('advance/records/delete/{record}',[AdvanceRecordController::class, 'delete'])
+        ->name('advance.records.delete');
     Route::middleware('auth:api')->group(function() {
         // 当前登录用户信息
         Route::get('user', [UsersController::class, 'me'])

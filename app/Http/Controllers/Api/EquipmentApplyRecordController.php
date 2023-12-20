@@ -32,6 +32,9 @@ class EquipmentApplyRecordController extends Controller
         if (!is_null($request->purchase_type)) {
             $query = $query->where('purchase_type', $request->purchase_type);
         }
+        if (!is_null($request->isAdvance)) {
+            $query = $query->where('isAdvance', $request->isAdvance);
+        }
         $records = $query->paginate();
         
         return  EquipmentApplyRecordResource::collection($records);
@@ -116,8 +119,9 @@ class EquipmentApplyRecordController extends Controller
                 $attributes['status'] = '5';
                 break;
             case 'install':
-                $attributes = $request->only(['install_date', 'install_picture']);
+                $attributes = $request->only(['install_date', 'install_picture', 'isAdvance']);
                 $attributes['status'] = '6';
+                $attributes['advance_status'] = '0';
                 break;
         }
         $record->update($attributes);
@@ -130,6 +134,9 @@ class EquipmentApplyRecordController extends Controller
     }
     
     public function back(Request $request, EquipmentApplyRecord $record){
+        if (!is_null($record->advance_status) && $record->advance_status != '0') {
+            return response()->json(['data' => '无法回退'])->setStatusCode(200);
+        }
         switch ($record->status) {
             case '0':
                 break;
@@ -178,6 +185,8 @@ class EquipmentApplyRecordController extends Controller
                     'status' => '5',
                     'install_date' => null,
                     'install_picture' => null,
+                    'isAdvance' => null,
+                    'advance_status' => null,
                 ]);
                 break;
         }

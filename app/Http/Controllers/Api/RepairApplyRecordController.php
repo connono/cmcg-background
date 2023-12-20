@@ -98,6 +98,7 @@ class RepairApplyRecordController extends Controller
             case 'install':
                 $attributes = $request->only(['price','install_file','isAdvance']);
                 $attributes['status'] = '2';
+                $attributes['advance_status'] = '0';
                 break;
         }
         $record->update($attributes);
@@ -110,6 +111,9 @@ class RepairApplyRecordController extends Controller
     }
     
     public function back(Request $request, RepairApplyRecord $record){
+        if (!is_null($record->advance_status) && $record->advance_status != '0') {
+            return response()->json(['data' => '无法回退'])->setStatusCode(200);
+        }
         switch ($record->status) {
             case '0':
                 break;

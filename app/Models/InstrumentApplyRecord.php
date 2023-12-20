@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use AdvanceRecord;
 
 class InstrumentApplyRecord extends Model
 {
@@ -23,7 +25,12 @@ class InstrumentApplyRecord extends Model
         'survey_picture',
         'purchase_picture',
         'install_picture',
+        'isAdvance',        // 是否垫付
+        'advance_status',   // 垫付状态
     ];
 
-
+    public function advanceRecord(): BelongsTo
+    {
+        return $this->belongsTo(AdvanceRecord::class);
+    }
 }

@@ -23,6 +23,10 @@ class InstrumentApplyRecordController extends Controller
         if (!is_null($request->instrument)) {
             $query = $query->where('instrument', 'like', '%'.$request->instrument.'%');
         }
+        if (!is_null($request->isAdvance)) {
+            $query = $query->where('isAdvance', $request->isAdvance);
+        }
+
         $records = $query->paginate();
         
         return  InstrumentApplyRecordResource::collection($records);
@@ -98,8 +102,9 @@ class InstrumentApplyRecordController extends Controller
                 $attributes['status'] = '3';
                 break;
             case 'install':
-                $attributes = $request->only(['install_date','install_picture']);
+                $attributes = $request->only(['install_date','install_picture','isAdvance']);
                 $attributes['status'] = '4';
+                $attributes['advance_status'] = '0';
                 break;
         }
         $record->update($attributes);
@@ -112,6 +117,9 @@ class InstrumentApplyRecordController extends Controller
     }
     
     public function back(Request $request, InstrumentApplyRecord $record){
+        if (!is_null($record->advance_status) && $record->advance_status != '0') {
+            return response()->json(['data' => '无法回退'])->setStatusCode(200);
+        }
         switch ($record->status) {
             case '0':
                 break;
@@ -136,6 +144,8 @@ class InstrumentApplyRecordController extends Controller
                     'status' => '3',
                     'install_date' => null,
                     'install_picture' => null,
+                    'isAdvance' => null,
+                    'advance_status' => null,
                 ]);
                 break;
         }
