@@ -27,6 +27,7 @@ class InstrumentApplyRecord extends Model
         'install_picture',
         'isAdvance',        // 是否垫付
         'advance_status',   // 垫付状态
+        'advance_record_id',
     ];
 
     public function advanceRecord(): BelongsTo

@@ -48,6 +48,7 @@ class EquipmentApplyRecord extends Model
         'install_picture',   // 安装图片
         'isAdvance',        // 是否垫付
         'advance_status',   // 垫付状态
+        'advance_record_id',
     ];
 
     public function advanceRecord(): BelongsTo

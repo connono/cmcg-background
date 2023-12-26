@@ -18,7 +18,7 @@ return new class extends Migration
                 $table->enum('isAdvance', ["false", "true"])->nullable()->comment('是否垫付');
             }
             if(!Schema::hasColumn('instrument_apply_records', 'advance_status')) {
-                $table->enum('advance_status', ["0","1","2"])->nullable()->comment('垫付状态');
+                $table->enum('advance_status', ["0","1","2", "3"])->nullable()->comment('垫付状态');
             }
         });
     }

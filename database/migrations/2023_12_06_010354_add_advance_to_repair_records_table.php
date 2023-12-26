@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('repair_records', function (Blueprint $table) {
             if(!Schema::hasColumn('repair_records', 'advance_status')) {
-                $table->enum('advance_status', ["0","1","2"])->nullable()->comment('垫付状态');
+                $table->enum('advance_status', ["0","1","2","3"])->nullable()->comment('垫付状态');
             }
         });
     }

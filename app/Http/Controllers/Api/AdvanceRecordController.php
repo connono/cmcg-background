@@ -93,32 +93,79 @@ class AdvanceRecordController extends Controller
     }
 
     public function update(Request $request, AdvanceRecord $record){
-        $attributes = $request->only(['payback_date']);
-        $attributes['status'] = '2';
-        $equipment_apply_records = $record->equipmentApplyRecords()->get();
-        foreach ( $equipment_apply_records as $equipment_apply_record) {
-            $equipment_apply_record->update([
-                'advance_status' => '2',
-            ]);
-        }
-        $instrument_apply_records = $record->instrumentApplyRecords()->get();
-        foreach ( $instrument_apply_records as $instrument_apply_record) {
-            $instrument_apply_record->update([
-                'advance_status' => '2',
-            ]);
-        }
-        $repair_apply_records = $record->repairApplyRecords()->get();
-        foreach ( $repair_apply_records as $repair_apply_record) {
-            $repair_apply_record->update([
-                'advance_status' => '2',
-            ]);
-        }
+        switch($request->method){
+            case 'approve':
+                $attributes['status'] = '2';
+                $equipment_apply_records = $record->equipmentApplyRecords()->get();
+                foreach ( $equipment_apply_records as $equipment_apply_record) {
+                    $equipment_apply_record->update([
+                        'advance_status' => '2',
+                    ]);
+                }
+                $instrument_apply_records = $record->instrumentApplyRecords()->get();
+                foreach ( $instrument_apply_records as $instrument_apply_record) {
+                    $instrument_apply_record->update([
+                        'advance_status' => '2',
+                    ]);
+                }
+                $repair_apply_records = $record->repairApplyRecords()->get();
+                foreach ( $repair_apply_records as $repair_apply_record) {
+                    $repair_apply_record->update([
+                        'advance_status' => '2',
+                    ]);
+                }
+                break;
+            case 'purchase':
+                $attributes = $request->only(['payback_date']);
+                $attributes['status'] = '3';
+                $equipment_apply_records = $record->equipmentApplyRecords()->get();
+                foreach ( $equipment_apply_records as $equipment_apply_record) {
+                    $equipment_apply_record->update([
+                        'advance_status' => '3',
+                    ]);
+                }
+                $instrument_apply_records = $record->instrumentApplyRecords()->get();
+                foreach ( $instrument_apply_records as $instrument_apply_record) {
+                    $instrument_apply_record->update([
+                        'advance_status' => '3',
+                    ]);
+                }
+                $repair_apply_records = $record->repairApplyRecords()->get();
+                foreach ( $repair_apply_records as $repair_apply_record) {
+                    $repair_apply_record->update([
+                        'advance_status' => '3',
+                    ]);
+                }
+                break;
+        
+            }
         $record->update($attributes);
         return new AdvanceRecordResource($record);
     }
 
     public function delete(Request $request, AdvanceRecord $record){
+        $equipment_apply_records = $record->equipmentApplyRecords()->get();
+        foreach ( $equipment_apply_records as $equipment_apply_record) {
+            $equipment_apply_record->update([
+                'advance_status' => '0',
+                'advance_record_id' => null,
+            ]);
+        }
+        $instrument_apply_records = $record->instrumentApplyRecords()->get();
+        foreach ( $instrument_apply_records as $instrument_apply_record) {
+            $instrument_apply_record->update([
+                'advance_status' => '0',
+                'advance_record_id' => null,
+            ]);
+        }
+        $repair_apply_records = $record->repairApplyRecords()->get();
+        foreach ( $repair_apply_records as $repair_apply_record) {
+            $repair_apply_record->update([
+                'advance_status' => '0',
+                'advance_record_id' => null,
+            ]);
+        }
         $record->delete();
-        return response()->json([])->setStatusCode(201);
+        return response()->json([])->setStatusCode(200);
     }
 }
