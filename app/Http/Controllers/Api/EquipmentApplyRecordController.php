@@ -8,8 +8,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Resources\EquipmentApplyRecordResource;
 use App\Http\Requests\Api\EquipmentApplyRecordRequest;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
 
 class EquipmentApplyRecordController extends Controller
 {
@@ -70,7 +68,6 @@ class EquipmentApplyRecordController extends Controller
             'expired_at' => $expiredAt->toDateTimeString(),
             'record_serial_number' => $record->serial_number,
         ])->setStatusCode(201);
-        return $count;
     }
 
     public function store(EquipmentApplyRecordRequest $request){

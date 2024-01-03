@@ -28,6 +28,9 @@ class Kernel extends ConsoleKernel
                     'permission' => $plan->department,
                     'title' => $plan->contract_name,
                     'body' => json_encode($plan),
+                    'category' => 'purchaseMonitor',
+                    'n_category' => 'paymentPlan',
+                    'type' => 'apply',
                     'link' => '/purchase/paymentMonitor/detail#apply&' . $plan->id . '&' . $plan->current_payment_record_id,
                 ]);
                 $plan->notification()->delete();
@@ -44,6 +47,9 @@ class Kernel extends ConsoleKernel
                     'permission' => $process->department,
                     'title' => $process->contract_name,
                     'body' => json_encode($process),
+                    'category' => 'purchaseMonitor',
+                    'n_category' => 'paymentProcess',
+                    'type' => 'apply',
                     'link' => '/purchase/paymentProcess/detail#apply&' . $process->id . '&' . $process->current_payment_record_id,
                 ]);
                 $process->notification()->delete();

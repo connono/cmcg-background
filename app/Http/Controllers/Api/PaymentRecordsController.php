@@ -80,6 +80,9 @@ class PaymentRecordsController extends Controller
                     'permission' => 'can_audit_payment_record',
                     'title' => $item->contract_name,
                     'body' => json_encode($item),
+                    'category' => 'purchaseMonitor',
+                    'n_category' => 'payment' . ucfirst($request->type),
+                    'type' => 'audit',
                     'link' => '/paymentProcess/detail#audit&' . $item->id . '&' . $item->current_payment_record_id,
                 ]);
                 $item->notification()->delete();
@@ -92,6 +95,9 @@ class PaymentRecordsController extends Controller
                     'permission' => 'can_process_payment_record',
                     'title' => $item->contract_name,
                     'body' => json_encode($item),
+                    'category' => 'purchaseMonitor',
+                    'n_category' => 'payment' . ucfirst($request->type),
+                    'type' => 'process',
                     'link' => '/paymentProcess/detail#process&' . $item->id . '&' . $item->current_payment_record_id,
                 ]);
                 $item->notification()->delete();
@@ -122,6 +128,9 @@ class PaymentRecordsController extends Controller
                     'permission' => $item->department,
                     'title' => $item->contract_name,
                     'body' => json_encode($item),
+                    'category' => 'purchaseMonitor',
+                    'n_category' => 'payment' . ucfirst($request->type),
+                    'type' => 'wait',
                     'link' => '/paymentProcess',
                 ]);
                 $item->notification()->delete();
@@ -151,6 +160,9 @@ class PaymentRecordsController extends Controller
             'permission' => $item->department,
             'title' => $item->contract_name,
             'body' => json_encode($item),
+            'category' => 'purchaseMonitor',
+            'n_category' => 'payment' . ucfirst($request->type),
+            'type' => 'apply',
             'link' => '/paymentProcess/detail#apply&' . $item->id . '&' . $item->current_payment_record_id,
         ]);
         $item->notification()->delete();
