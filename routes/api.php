@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ContractController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UsersController;
@@ -157,6 +158,14 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('advance.records.update');
     Route::delete('advance/records/delete/{record}',[AdvanceRecordController::class, 'delete'])
         ->name('advance.records.delete');
+    Route::get('payment/contracts/index',[ContractController::class, 'index'])
+        ->name('payment.contracts.index');
+    Route::get('payment/contracts/getItem',[ContractController::class, 'getItem'])
+        ->name('payment.contracts.getItem');
+    Route::post('payment/contracts/store',[ContractController::class, 'store'])
+        ->name('payment.contracts.store');
+    Route::delete('payment/contracts/delete',[ContractController::class, 'delete'])
+        ->name('payment.contracts.delete');
     Route::middleware('auth:api')->group(function() {
         // 当前登录用户信息
         Route::get('user', [UsersController::class, 'me'])
