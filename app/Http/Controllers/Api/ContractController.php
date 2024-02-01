@@ -53,7 +53,7 @@ class ContractController extends Controller
             'contract_file' =>  $request->contract_file,
             'isImportant' => $request->isImportant,
             'comment' => $request->comment,
-            'complementation_agreements' => $request->complementation_agreements,
+            'isComplement' => $request->isComplement,
         ]);
         $series_code = 0;
         $len = 5;
@@ -71,6 +71,12 @@ class ContractController extends Controller
         // $dean = User::find($request->dean_id);
         // $contract->dean()->save($dean);
 
+        return new ContractResource($contract);
+    }
+
+    public function storeDocx(Request $request, Contract $contract){
+        $attributes = $request->only(['contract_docx']);
+        $contract->update($attributes);
         return new ContractResource($contract);
     }
     

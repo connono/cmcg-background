@@ -19,8 +19,9 @@ class Contract extends Model
         'price',
         'isImportant',
         'comment',
-        'complementation_agreements',
+        'isComplement',
         'contract_file',
+        'contract_docx',
     ];
 
     public function manager (): HasOne

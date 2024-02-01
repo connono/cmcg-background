@@ -23,13 +23,14 @@ return new class extends Migration
             $table->enum('category', ['JJ', 'YP', 'XX', 'XS', 'HZ', 'ZW', 'FW', 'QX'])->comment('类型');
             $table->string('contractor')->comment('签订对象');
             $table->string('source')->comment('资金来源');
-            $table->float('price')->comment('金额');
+            $table->integer('price')->comment('金额');
             $table->enum('isImportant',['true', 'false'])->comment('是否为重大项目');
             $table->text('comment')->nullable()->comment('备注');
-            $table->string('complementation_agreements')->nullable()->comment('补充协议');
+            $table->enum('isComplement', ['true', 'false'])->nullable()->comment('是否补充协议');
             $table->integer('manager_id')->comment('归口管理科室负责人id');
             $table->integer('manage_dean_id')->comment('分管院长id');
             $table->integer('dean_id')->comment('院长id');
+            $table->string('contract_docx')->comment('生成的备案表');
             $table->timestamps();
         });
     }

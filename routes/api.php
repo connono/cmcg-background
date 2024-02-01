@@ -164,7 +164,9 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('payment.contracts.getItem');
     Route::post('payment/contracts/store',[ContractController::class, 'store'])
         ->name('payment.contracts.store');
-    Route::delete('payment/contracts/delete',[ContractController::class, 'delete'])
+    Route::post('payment/contracts/storeDocx/{contract}',[ContractController::class, 'storeDocx'])
+        ->name('payment.contracts.storeDocx');
+    Route::delete('payment/contracts/delete/{contract}',[ContractController::class, 'delete'])
         ->name('payment.contracts.delete');
     Route::middleware('auth:api')->group(function() {
         // 当前登录用户信息
