@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Contract;
 use Illuminate\Http\Request;
 use App\Models\PaymentPlan;
 use App\Models\Department;
@@ -45,6 +46,11 @@ class PaymentPlansController extends Controller
         $plan->records_count = 0;
         $plan->assessments_count = 0;
         $plan->save();
+
+        if ($request->contract_id) {
+            $contract = Contract::find($request->contract_id);
+            $contract->plans()->save($plan);
+        }
 
         return new PaymentPlanResource($plan);
     }

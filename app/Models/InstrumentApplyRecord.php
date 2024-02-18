@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use AdvanceRecord;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class InstrumentApplyRecord extends Model
 {
@@ -33,5 +33,11 @@ class InstrumentApplyRecord extends Model
     public function advanceRecord(): BelongsTo
     {
         return $this->belongsTo(AdvanceRecord::class);
+    }
+
+    
+    public function contract(): HasOne
+    {
+        return $this->hasOne(Contract::class);
     }
 }

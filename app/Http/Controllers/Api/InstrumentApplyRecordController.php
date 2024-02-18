@@ -62,7 +62,6 @@ class InstrumentApplyRecordController extends Controller
             'expired_at' => $expiredAt->toDateTimeString(),
             'record_serial_number' => $record->serial_number,
         ])->setStatusCode(201);
-        return $count;
     }
 
     public function store(Request $request){

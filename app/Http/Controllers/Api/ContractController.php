@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PaymentPlanResource;
+use App\Http\Resources\PaymentProcessResource;
 use Illuminate\Http\Request;
 use App\Models\Contract;
 use App\Models\User;
 use App\Http\Resources\ContractResource;
+use App\Models\EquipmentApplyRecord;
+use App\Models\InstrumentApplyRecord;
 
 class ContractController extends Controller
 {
@@ -64,6 +68,20 @@ class ContractController extends Controller
         }
         $contract->series_number = $series_number;
         $contract->save();
+        if ($request->equipment_apply_record_id) {
+            $equipment_apply_record = EquipmentApplyRecord::find($request->equipment_apply_record_id);
+            $equipment_apply_record->contract()->save($contract);
+            $equipment_apply_record->update([
+                'status' => '5'
+            ]);
+        }
+        if ($request->instrument_apply_record_id) {
+            $instrument_apply_record = InstrumentApplyRecord::find($request->instrument_apply_record_id);
+            $instrument_apply_record->contract()->save($contract);
+            $instrument_apply_record->update([
+                'status' => '3'
+            ]);
+        }
         // $manager = User::find($request->manager_id);
         // $contract->manager()->save($manager);
         // $manage_dean = User::find($request->manage_dean_id);
@@ -78,6 +96,26 @@ class ContractController extends Controller
         $attributes = $request->only(['contract_docx']);
         $contract->update($attributes);
         return new ContractResource($contract);
+    }
+
+    public function plans(Request $request, Contract $contract) {
+        $plans = $contract->plans()->get();
+        return PaymentPlanResource::collection($plans);
+    }
+
+    public function deletePlan(Request $request, Contract $contract) {
+        $contract->plans()->where('id', $request->plan_id)->delete();
+        return response()->json([])->setStatusCode(200);
+    }
+
+    public function deleteProcess(Request $request, Contract $contract) {
+        $contract->processes()->where('id', $request->process_id)->delete();
+        return response()->json([])->setStatusCode(200);
+    }
+
+    public function processes(Request $request, Contract $contract) {
+        $processes = $contract->processes()->get();
+        return PaymentProcessResource::collection($processes);
     }
     
     public function delete(Request $request, Contract $contract) {

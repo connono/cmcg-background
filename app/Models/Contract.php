@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Contract extends Model
@@ -37,5 +38,15 @@ class Contract extends Model
     public function dean (): HasOne
     {
         return $this->hasOne(User::class, 'dean_id');
+    }
+
+    public function plans (): HasMany
+    {
+        return $this->hasMany(PaymentPlan::class);
+    }
+
+    public function processes (): HasMany
+    {
+        return $this->hasMany(PaymentProcess::class);
     }
 }

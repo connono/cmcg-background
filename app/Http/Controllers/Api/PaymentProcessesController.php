@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\PaymentProcess;
 use App\Models\Department;
+use App\Models\Contract;
 use App\Http\Resources\PaymentProcessResource;
 
 class PaymentProcessesController extends Controller
@@ -45,6 +46,11 @@ class PaymentProcessesController extends Controller
         $process->assessments_count = 0;
         $process->save();
 
+        if ($request->contract_id) {
+            $contract = Contract::find($request->contract_id);
+            $contract->processes()->save($process);
+        }
+
         return new PaymentProcessResource($process);
     }
 
@@ -61,6 +67,6 @@ class PaymentProcessesController extends Controller
             $record->delete();
         }
         $process->delete();
-        return response()->json([])->setStatusCode(201);
+        return response()->json([])->setStatusCode(200);
     }
 }

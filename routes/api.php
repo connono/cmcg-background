@@ -168,6 +168,14 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('payment.contracts.storeDocx');
     Route::delete('payment/contracts/delete/{contract}',[ContractController::class, 'delete'])
         ->name('payment.contracts.delete');
+    Route::get('payment/contracts/plans/{contract}',[ContractController::class, 'plans'])
+        ->name('payment.contracts.plans');
+    Route::get('payment/contracts/processes/{contract}',[ContractController::class, 'processes'])
+        ->name('payment.contracts.processes');
+    Route::delete('payment/contracts/plans/delete/{contract}',[ContractController::class, 'deletePlan'])
+        ->name('payment.contracts.plans.delete');
+    Route::delete('payment/contracts/processes/delete/{contract}',[ContractController::class, 'deleteProcess'])
+        ->name('payment.contracts.processes.delete');
     Route::middleware('auth:api')->group(function() {
         // 当前登录用户信息
         Route::get('user', [UsersController::class, 'me'])
