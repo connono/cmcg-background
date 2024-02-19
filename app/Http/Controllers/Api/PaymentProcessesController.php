@@ -48,6 +48,10 @@ class PaymentProcessesController extends Controller
 
         if ($request->contract_id) {
             $contract = Contract::find($request->contract_id);
+            $contract_name = $contract->contract_name . $contract->series_number . '-' . $process->id;
+            $process->update([
+                'contract_name' => $contract_name,
+            ]);
             $contract->processes()->save($process);
         }
 

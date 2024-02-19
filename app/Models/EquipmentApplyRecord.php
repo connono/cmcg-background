@@ -49,6 +49,8 @@ class EquipmentApplyRecord extends Model
         'isAdvance',        // 是否垫付
         'advance_status',   // 垫付状态
         'advance_record_id',
+        // 入库
+        'warehousing_date', // 入库日期
     ];
 
     public function advanceRecord(): BelongsTo

@@ -120,6 +120,10 @@ class EquipmentApplyRecordController extends Controller
                 $attributes['status'] = '6';
                 $attributes['advance_status'] = '0';
                 break;
+            case 'warehouse':
+                $attributes = $request->only(['warehousing_date']);
+                $attributes['status'] = '7';
+                break;
         }
         $record->update($attributes);
         return new EquipmentApplyRecordResource($record);

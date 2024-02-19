@@ -49,6 +49,10 @@ class PaymentPlansController extends Controller
 
         if ($request->contract_id) {
             $contract = Contract::find($request->contract_id);
+            $contract_name = $contract->contract_name . $contract->series_number . '-' . $plan->id;
+            $plan->update([
+                'contract_name' => $contract_name,
+            ]);
             $contract->plans()->save($plan);
         }
 
