@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Http\Resources\ContractResource;
 use App\Models\EquipmentApplyRecord;
 use App\Models\InstrumentApplyRecord;
+use App\Models\Notification;
 
 class ContractController extends Controller
 {
@@ -74,6 +75,17 @@ class ContractController extends Controller
             $equipment_apply_record->update([
                 'status' => '5'
             ]);
+            $notification = Notification::create([
+                'permission' => 'can_install_equipment',
+                'title' => $equipment_apply_record->equipment,
+                'body' => json_encode($equipment_apply_record),
+                'category' => 'apply',
+                'n_category' => 'equipmentApplyRecord',
+                'type' => 'install',
+                'link' => '/apply/equipment/detail#update&' . $equipment_apply_record->id,
+            ]);
+            $equipment_apply_record->notification()->delete();
+            $equipment_apply_record->notification()->save($notification);
         }
         if ($request->instrument_apply_record_id) {
             $instrument_apply_record = InstrumentApplyRecord::find($request->instrument_apply_record_id);

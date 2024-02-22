@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Resources\EquipmentApplyRecordResource;
 use App\Http\Requests\Api\EquipmentApplyRecordRequest;
+use App\Models\Notification;
 
 class EquipmentApplyRecordController extends Controller
 {
@@ -92,6 +93,18 @@ class EquipmentApplyRecordController extends Controller
 
         $record->save();
 
+        $notification = Notification::create([
+            'permission' => 'can_survey_equipment',
+            'title' => $record->equipment,
+            'body' => json_encode($record),
+            'category' => 'apply',
+            'n_category' => 'equipmentApplyRecord',
+            'type' => 'survey',
+            'link' => '/apply/equipment/detail#update&' . $record->id,
+        ]);
+        $record->notification()->delete();
+        $record->notification()->save($notification);
+
         \Cache::forget('equipment_serial_number_'.$request->serial_number);
 
         return new EquipmentApplyRecordResource($record);
@@ -102,27 +115,93 @@ class EquipmentApplyRecordController extends Controller
             case 'survey':
                 $attributes = $request->only(['survey_date','purchase_type','survey_record','meeting_record', 'survey_picture']);
                 $attributes['status'] = '2';
+                $notification = Notification::create([
+                    'permission' => 'can_approve_equipment',
+                    'title' => $record->equipment,
+                    'body' => json_encode($record),
+                    'category' => 'apply',
+                    'n_category' => 'equipmentApplyRecord',
+                    'type' => 'approve',
+                    'link' => '/apply/equipment/detail#update&' . $record->id,
+                ]);
+                $record->notification()->delete();
+                $record->notification()->save($notification);
                 break;
             case 'approve':
                 $attributes = $request->only(['approve_date','execute_date', 'approve_picture']);
-                $attributes['status'] = $record->purchase_type == 1 ? '3' : '4';
+                if ($record->purchase_type == 1) {
+                    $attributes['status'] = '3';
+                    $notification = Notification::create([
+                        'permission' => 'can_tender_equipment',
+                        'title' => $record->equipment,
+                        'body' => json_encode($record),
+                        'category' => 'apply',
+                        'n_category' => 'equipmentApplyRecord',
+                        'type' => 'tender',
+                        'link' => '/apply/equipment/detail#update&' . $record->id,
+                    ]);
+                    $record->notification()->delete();
+                    $record->notification()->save($notification);    
+                } else {
+                    $attributes['status'] = '4';
+                    $notification = Notification::create([
+                        'permission' => 'can_contract_equipment',
+                        'title' => $record->equipment,
+                        'body' => json_encode($record),
+                        'category' => 'apply',
+                        'n_category' => 'equipmentApplyRecord',
+                        'type' => 'contract',
+                        'link' => '/apply/equipment/detail#update&' . $record->id,
+                    ]);
+                    $record->notification()->delete();
+                    $record->notification()->save($notification); 
+                }
                 break;
             case 'tender':
                 $attributes = $request->only(['tender_date','tender_out_date', 'tender_file', 'tender_boardcast_file', 'bid_winning_file', 'send_tender_file']);
                 $attributes['status'] = '4';
-                break;
-            case 'purchase':
-                $attributes = $request->only(['purchase_date','arrive_date','price', 'purchase_picture']);
-                $attributes['status'] = '5';
+                $notification = Notification::create([
+                    'permission' => 'can_contract_equipment',
+                    'title' => $record->equipment,
+                    'body' => json_encode($record),
+                    'category' => 'apply',
+                    'n_category' => 'equipmentApplyRecord',
+                    'type' => 'contract',
+                    'link' => '/apply/equipment/detail#update&' . $record->id,
+                ]);
+                $record->notification()->delete();
+                $record->notification()->save($notification);
                 break;
             case 'install':
                 $attributes = $request->only(['install_date', 'install_picture', 'isAdvance']);
                 $attributes['status'] = '6';
                 $attributes['advance_status'] = '0';
+                $notification = Notification::create([
+                    'permission' => 'can_warehouse_equipment',
+                    'title' => $record->equipment,
+                    'body' => json_encode($record),
+                    'category' => 'apply',
+                    'n_category' => 'equipmentApplyRecord',
+                    'type' => 'warehouse',
+                    'link' => '/apply/equipment/detail#update&' . $record->id,
+                ]);
+                $record->notification()->delete();
+                $record->notification()->save($notification);
                 break;
             case 'warehouse':
                 $attributes = $request->only(['warehousing_date']);
                 $attributes['status'] = '7';
+                $notification = Notification::create([
+                    'permission' => 'can_apply_equipment',
+                    'title' => $record->equipment,
+                    'body' => json_encode($record),
+                    'category' => 'apply',
+                    'n_category' => 'equipmentApplyRecord',
+                    'type' => 'finish',
+                    'link' => '/apply/equipment/detail#update&' . $record->id,
+                ]);
+                $record->notification()->delete();
+                $record->notification()->save($notification);
                 break;
         }
         $record->update($attributes);

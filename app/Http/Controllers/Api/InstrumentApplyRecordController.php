@@ -96,10 +96,6 @@ class InstrumentApplyRecordController extends Controller
                 $attributes = $request->only(['survey_date','survey_picture']);
                 $attributes['status'] = '2';
                 break;
-            case 'purchase':
-                $attributes = $request->only(['price','purchase_picture']);
-                $attributes['status'] = '3';
-                break;
             case 'install':
                 $attributes = $request->only(['install_date','install_picture','isAdvance']);
                 $attributes['status'] = '4';
