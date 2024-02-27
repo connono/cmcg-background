@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\PaymentRecord;
 
 class PaymentProcess extends Model
 {
@@ -32,7 +31,7 @@ class PaymentProcess extends Model
 
     public function records(): HasMany
     {
-        return $this->hasMany(PaymentRecord::class);
+        return $this->hasMany(\App\Models\PaymentProcessRecord::class);
     }
 
     public function notification(): HasOne

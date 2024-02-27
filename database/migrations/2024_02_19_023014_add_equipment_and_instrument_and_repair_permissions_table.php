@@ -72,6 +72,8 @@ return new class extends Migration
         $medical_engineering_officer->givePermissionTo('can_back_repair');
 
         $purchaser = Role::create(['name'=> '采购中心管理员']);
+        $purchaser->givePermissionTo('can_see_equipment');
+        $purchaser->givePermissionTo('can_see_instrument');
         $purchaser->givePermissionTo('can_approve_equipment');
         $purchaser->givePermissionTo('can_tender_equipment');
         $purchaser->givePermissionTo('can_contract_equipment');

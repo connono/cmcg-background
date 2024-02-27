@@ -1,11 +1,11 @@
 <?php
 
 use App\Http\Controllers\Api\ContractController;
+use App\Http\Controllers\Api\PaymentProcessRecordsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UsersController;
 use App\Http\Controllers\Api\AuthorizationController;
-use App\Http\Controllers\Api\ImagesController;
 use App\Http\Controllers\Api\EquipmentApplyRecordController;
 use App\Http\Controllers\Api\InstrumentApplyRecordController;
 use App\Http\Controllers\Api\RepairApplyRecordController;
@@ -52,8 +52,6 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('users.reset');
     Route::delete('users/{user}',[UsersController::class, 'delete'])
         ->name('users.delete');
-    Route::post('images', [ImagesController::class, 'store'])
-        ->name('images.store');
     Route::get('equipment/index',[EquipmentApplyRecordController::class, 'index'])
         ->name('equipment.index');
     Route::get('equipment/item',[EquipmentApplyRecordController::class, 'getItem'])
@@ -126,10 +124,10 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('payment.processes.stop');
     Route::delete('payment/processes/delete/{plan}',[PaymentProcessesController::class, 'delete'])
         ->name('payment.processes.delete');
-    Route::get('payment/records/planIndex/{plan}',[PaymentRecordsController::class, 'planIndex'])
-        ->name('payment.records.planIndex');
-    Route::get('payment/records/processIndex/{process}',[PaymentRecordsController::class, 'processIndex'])
-        ->name('payment.records.processIndex');
+    Route::get('payment/records/index/{plan}',[PaymentRecordsController::class, 'index'])
+        ->name('payment.records.index');
+    Route::get('payment/process/records/index/{process}',[PaymentProcessRecordsController::class, 'index'])
+        ->name('payment.process.records.index');
     Route::get('payment/records/getItem',[PaymentRecordsController::class, 'getItem'])
         ->name('payment.getItem');
     Route::post('payment/records/store',[PaymentRecordsController::class, 'store'])
@@ -140,6 +138,16 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('payment.records.delete');
     Route::patch('payment/records/back/{record}',[PaymentRecordsController::class, 'back'])
         ->name('payment.records.back');
+    Route::get('payment/process/records/getItem',[PaymentProcessRecordsController::class, 'getItem'])
+        ->name('payment.process.getItem');
+    Route::post('payment/process/records/store',[PaymentProcessRecordsController::class, 'store'])
+        ->name('payment.process.records.store');
+    Route::post('payment/process/records/update/{record}',[PaymentProcessRecordsController::class, 'update'])
+        ->name('payment.process.records.update');
+    Route::delete('payment/process/records/delete/{record}',[PaymentProcessRecordsController::class, 'delete'])
+        ->name('payment.process.records.delete');
+    Route::patch('payment/process/records/back/{record}',[PaymentProcessRecordsController::class, 'back'])
+        ->name('payment.process.records.back');
     Route::get('notifications/index/{user}',[NotificationsController::class, 'index'])
         ->name('notifications.index');
     Route::get('department/index',[DepartmentController::class, 'index'])
