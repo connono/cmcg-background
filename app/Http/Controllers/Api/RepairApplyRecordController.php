@@ -95,10 +95,13 @@ class RepairApplyRecordController extends Controller
     public function update(Request $request, $method, RepairApplyRecord $record){
         switch($request->method){
             case 'install':
-                $attributes = $request->only(['price','install_file','isAdvance']);
+                $attributes = $request->only(['price','install_file']);
                 $attributes['status'] = '2';
-                $attributes['advance_status'] = '0';
                 break;
+            case 'engineer_approve':
+                $attributes = $request->only(['isAdvance']);
+                $attributes['advance_status'] = '0';
+                $attributes['status'] = '3';
         }
         $record->update($attributes);
         return new RepairApplyRecordResource($record);

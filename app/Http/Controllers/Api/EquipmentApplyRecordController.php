@@ -173,8 +173,24 @@ class EquipmentApplyRecordController extends Controller
                 $record->notification()->save($notification);
                 break;
             case 'install':
-                $attributes = $request->only(['install_date', 'install_picture', 'isAdvance']);
+                $attributes = $request->only(['install_date', 'install_picture']);
                 $attributes['status'] = '6';
+                $attributes['advance_status'] = '0';
+                $notification = Notification::create([
+                    'permission' => 'can_engineer_approve_equipment',
+                    'title' => $record->equipment,
+                    'body' => json_encode($record),
+                    'category' => 'apply',
+                    'n_category' => 'equipmentApplyRecord',
+                    'type' => 'engineer_approve',
+                    'link' => '/apply/equipment/detail#update&' . $record->id,
+                ]);
+                $record->notification()->delete();
+                $record->notification()->save($notification);
+                break;
+            case 'engineer_approve':
+                $attributes = $request->only(['isAdvance']);
+                $attributes['status'] = '7';
                 $attributes['advance_status'] = '0';
                 $notification = Notification::create([
                     'permission' => 'can_warehouse_equipment',
@@ -185,12 +201,9 @@ class EquipmentApplyRecordController extends Controller
                     'type' => 'warehouse',
                     'link' => '/apply/equipment/detail#update&' . $record->id,
                 ]);
-                $record->notification()->delete();
-                $record->notification()->save($notification);
-                break;
             case 'warehouse':
                 $attributes = $request->only(['warehousing_date']);
-                $attributes['status'] = '7';
+                $attributes['status'] = '8';
                 $notification = Notification::create([
                     'permission' => 'can_apply_equipment',
                     'title' => $record->equipment,

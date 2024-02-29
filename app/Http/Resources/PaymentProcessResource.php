@@ -34,6 +34,7 @@ class PaymentProcessResource extends JsonResource
             "current_payment_record_id"=> $this->current_payment_record_id,
             "contract_id"=> $this->contract_id,
             'warehousing_date' => EquipmentApplyRecord::find(Contract::find($this->contract_id)->equipment_apply_record_id)->warehousing_date,
+            'install_picture' => EquipmentApplyRecord::find(Contract::find($this->contract_id)->equipment_apply_record_id)->install_picture,
         ];
     }
 }
