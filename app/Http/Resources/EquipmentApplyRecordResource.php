@@ -35,6 +35,7 @@ class EquipmentApplyRecordResource extends JsonResource
             "approve_date"=> $this->approve_date,
             "execute_date"=> $this->execute_date,
             "approve_picture"=> $this->approve_picture,
+            "apply_picture"=> $this->apply_picture,
             "tender_date"=> $this->tender_date,
             "tender_file"=> $this->tender_file,
             "tender_boardcast_file"=> $this->tender_boardcast_file,

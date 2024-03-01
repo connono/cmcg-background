@@ -201,17 +201,24 @@ class EquipmentApplyRecordController extends Controller
                     'type' => 'warehouse',
                     'link' => '/apply/equipment/detail#update&' . $record->id,
                 ]);
+                break;
             case 'warehouse':
                 $attributes = $request->only(['warehousing_date']);
                 $attributes['status'] = '8';
+                $contract =  $record->contract()->first();
+                $information = (object) array_merge([
+                    'equipment' => $record->equipment,
+                    'count' => $record->count,
+                    'budget' => $record->budget,
+                ], (array) $contract);
                 $notification = Notification::create([
                     'permission' => 'can_apply_equipment',
                     'title' => $record->equipment,
-                    'body' => json_encode($record),
+                    'body' => json_encode($information),
                     'category' => 'apply',
                     'n_category' => 'equipmentApplyRecord',
                     'type' => 'finish',
-                    'link' => '/apply/equipment/detail#update&' . $record->id,
+                    'link' => '/purchase/contract/detail#' . $contract->id,
                 ]);
                 $record->notification()->delete();
                 $record->notification()->save($notification);
@@ -244,6 +251,7 @@ class EquipmentApplyRecordController extends Controller
                     'meeting_record' => null,
                     'survey_picture' => null,
                 ]);
+                $record->notification()->delete();
                 break;
             case '3':
                 $record->update([
@@ -252,6 +260,7 @@ class EquipmentApplyRecordController extends Controller
                     'execute_date' => null,
                     'approve_picture' => null,
                 ]);
+                $record->notification()->delete();
                 break;
             case '4':
                 $record->update([
@@ -263,6 +272,7 @@ class EquipmentApplyRecordController extends Controller
                     'bid_winning_file' => null,
                     'send_tender_file' => null,
                 ]);
+                $record->notification()->delete();
                 break;
             case '5':
                 $record->update([
@@ -272,15 +282,30 @@ class EquipmentApplyRecordController extends Controller
                     'price' => null,
                     'purchase_picture' => null,
                 ]);
+                $record->notification()->delete();
                 break;
             case '6':
                 $record->update([
                     'status' => '5',
                     'install_date' => null,
                     'install_picture' => null,
+                ]);
+                $record->notification()->delete();
+                break;
+            case '7':
+                $record->update([
+                    'status' => '6',
                     'isAdvance' => null,
                     'advance_status' => null,
                 ]);
+                $record->notification()->delete();
+                break;
+            case '8':
+                $record->update([
+                    'status' => '7',
+                    'warehousing_date' => null,
+                ]);
+                $record->notification()->delete(); 
                 break;
         }
         return new EquipmentApplyRecordResource($record);

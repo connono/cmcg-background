@@ -34,6 +34,7 @@ return new class extends Migration
         Permission::create(['name'=> 'can_install_repair']);
         Permission::create(['name' => 'can_back_repair']);
         Permission::create(['name'=> 'can_delete_repair']);
+        Permission::create(['name'=> 'do_not_see_equipment_except_install']);
 
         $founder = Role::where('name','网站开发维护者')->first();
         $founder->givePermissionTo('can_apply_equipment');
@@ -73,11 +74,14 @@ return new class extends Migration
 
         $purchaser = Role::create(['name'=> '采购中心管理员']);
         $purchaser->givePermissionTo('can_see_equipment');
-        $purchaser->givePermissionTo('can_see_instrument');
         $purchaser->givePermissionTo('can_approve_equipment');
         $purchaser->givePermissionTo('can_tender_equipment');
         $purchaser->givePermissionTo('can_contract_equipment');
-        $purchaser->givePermissionTo('can_warehouse_equipment');
+
+        $warehouse_keeper = Role::create(['name' =>'仓管员']);
+        $warehouse_keeper->givePermissionTo('can_see_equipment');
+        $warehouse_keeper->givePermissionTo('can_warehouse_equipment');
+        $warehouse_keeper->givePermissionTo('do_not_see_equipment_except_install');
 
     }
 

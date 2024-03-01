@@ -34,7 +34,7 @@ return new class extends Migration
         $medical_engineering_officer->givePermissionTo('can_apply_payment_process_record');
         $medical_engineering_officer->givePermissionTo('can_stop_payment_process_record');
 
-        $document_manager = Role::create(['name'=> '仓管员']);
+        $document_manager = Role::create(['name'=> '制单员']);
         $document_manager->givePermissionTo('can_document_payment_process_record');
 
         $vice_president = Role::create(['name'=> '副院长']);

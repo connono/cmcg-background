@@ -12,15 +12,47 @@ class NotificationsController extends Controller
 {
     public function index(Request $request, User $user, Notification $notificaiton) {
         $notifications = Notification::all();
-        // $notifications = Notification::where('permission', $user->department)->get();
-        // if ($user->can('can_audit_payment_record')) {
-        //     $notifications_audit = Notification::where('permission', 'can_audit_payment_record')->get();
-        //     $notifications = $notifications->merge($notifications_audit);
-        // }
-        // if ($user->can('can_process_payment_record')) {
-        //     $notifications_process = Notification::where('permission', 'can_process_payment_record')->get();
-        //     $notifications = $notifications->merge($notifications_process);
-        // }
+        $notifications = Notification::where('permission', $user->department)->get();
+        if ($user->can('can_audit_payment_record')) {
+            $notifications_audit = Notification::where('permission', 'can_audit_payment_record')->get();
+            $notifications = $notifications->merge($notifications_audit);
+        }
+        if ($user->can('can_process_payment_record')) {
+            $notifications_process = Notification::where('permission', 'can_process_payment_record')->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_apply_equipment')) {
+            $notifications_process = Notification::where('permission', 'can_apply_equipment')->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_install_equipment')) {
+            $notifications_process = Notification::where('permission', 'can_install_equipment')->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_survey_equipment')) {
+            $notifications_process = Notification::where('permission', 'can_survey_equipment')->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_approve_equipment')) {
+            $notifications_process = Notification::where('permission', 'can_approve_equipment')->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_tender_equipment')) {
+            $notifications_process = Notification::where('permission', 'can_tender_equipment')->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_contract_equipment')) {
+            $notifications_process = Notification::where('permission', 'can_contract_equipment')->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_engineer_approve_equipment')) {
+            $notifications_process = Notification::where('permission', 'can_engineer_approve_equipment')->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_warehouse_equipment')) {
+            $notifications_process = Notification::where('permission', 'can_warehouse_equipment')->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
         return  NotificationResource::collection($notifications);
     }
 
