@@ -8,6 +8,8 @@ use App\Models\PaymentProcess;
 use App\Models\PaymentProcessRecord;
 use App\Http\Resources\PaymentProcessRecordResource;
 use App\Models\Notification;
+use App\Models\Contract;
+use App\Models\EquipmentApplyRecord;
 
 class PaymentProcessRecordsController extends Controller
 {
@@ -51,10 +53,19 @@ class PaymentProcessRecordsController extends Controller
                     'status' => 'document',
                     'assessment' => $request->assessment,
                 ]);
+                $recordJSON = json_encode($record, true);
+                $record_array = json_decode($recordJSON, true);
+                $contract = Contract::find($process->contract_id);
+                $equipment_apply_record = EquipmentApplyRecord::find($contract->equipment_apply_record_id);
+                $equipment_apply_recordJSON = json_encode($equipment_apply_record, true);
+                $equipment_apply_record_array = json_decode($equipment_apply_recordJSON, true);
+                $processJSON = json_encode($process, true);
+                $process_array = json_decode($processJSON, true);
+                $information = (object) array_merge($record_array, $equipment_apply_record_array, $process_array);
                 $notification = Notification::create([
                     'permission' => 'can_document_payment_process_record',
                     'title' => $process->contract_name,
-                    'body' => json_encode($process),
+                    'body' => json_encode($information),
                     'category' => 'purchaseMonitor',
                     'n_category' => 'paymentProcess',
                     'type' => 'document',
@@ -68,10 +79,19 @@ class PaymentProcessRecordsController extends Controller
                 $process->update([
                     'status' => 'finance_audit',
                 ]);
+                $recordJSON = json_encode($record, true);
+                $record_array = json_decode($recordJSON, true);
+                $contract = Contract::find($process->contract_id);
+                $equipment_apply_record = EquipmentApplyRecord::find($contract->equipment_apply_record_id);
+                $equipment_apply_recordJSON = json_encode($equipment_apply_record, true);
+                $equipment_apply_record_array = json_decode($equipment_apply_recordJSON, true);
+                $processJSON = json_encode($process, true);
+                $process_array = json_decode($processJSON, true);
+                $information = (object) array_merge($record_array, $equipment_apply_record_array, $process_array);
                 $notification = Notification::create([
                     'permission' => 'can_finance_audit_payment_process_record',
                     'title' => $process->contract_name,
-                    'body' => json_encode($process),
+                    'body' => json_encode($information),
                     'category' => 'purchaseMonitor',
                     'n_category' => 'paymentProcess',
                     'type' => 'finance_audit',
@@ -83,10 +103,19 @@ class PaymentProcessRecordsController extends Controller
             case 'finance_audit':
                 $attributes = [];
                 $process->update(['status' => 'dean_audit']);
+                $recordJSON = json_encode($record, true);
+                $record_array = json_decode($recordJSON, true);
+                $contract = Contract::find($process->contract_id);
+                $equipment_apply_record = EquipmentApplyRecord::find($contract->equipment_apply_record_id);
+                $equipment_apply_recordJSON = json_encode($equipment_apply_record, true);
+                $equipment_apply_record_array = json_decode($equipment_apply_recordJSON, true);
+                $processJSON = json_encode($process, true);
+                $process_array = json_decode($processJSON, true);
+                $information = (object) array_merge($record_array, $equipment_apply_record_array, $process_array);
                 $notification = Notification::create([
                     'permission' => 'can_dean_audit_payment_process_record',
                     'title' => $process->contract_name,
-                    'body' => json_encode($process),
+                    'body' => json_encode($information),
                     'category' => 'purchaseMonitor',
                     'n_category' => 'paymentProcess',
                     'type' => 'dean_audit',
@@ -98,10 +127,19 @@ class PaymentProcessRecordsController extends Controller
             case 'dean_audit':
                 $attributes = [];
                 $process->update(['status' => 'process']);
+                $recordJSON = json_encode($record, true);
+                $record_array = json_decode($recordJSON, true);
+                $contract = Contract::find($process->contract_id);
+                $equipment_apply_record = EquipmentApplyRecord::find($contract->equipment_apply_record_id);
+                $equipment_apply_recordJSON = json_encode($equipment_apply_record, true);
+                $equipment_apply_record_array = json_decode($equipment_apply_recordJSON, true);
+                $processJSON = json_encode($process, true);
+                $process_array = json_decode($processJSON, true);
+                $information = (object) array_merge($record_array, $equipment_apply_record_array, $process_array);
                 $notification = Notification::create([
                     'permission' => 'can_process_payment_process_record',
                     'title' => $process->contract_name,
-                    'body' => json_encode($process),
+                    'body' => json_encode($information),
                     'category' => 'purchaseMonitor',
                     'n_category' => 'paymentProcess',
                     'type' => 'process',
@@ -131,10 +169,19 @@ class PaymentProcessRecordsController extends Controller
                     'records_count' => $records_count,
                     'assessments_count' => $assessments_count, 
                 ]);
+                $recordJSON = json_encode($record, true);
+                $record_array = json_decode($recordJSON, true);
+                $contract = Contract::find($process->contract_id);
+                $equipment_apply_record = EquipmentApplyRecord::find($contract->equipment_apply_record_id);
+                $equipment_apply_recordJSON = json_encode($equipment_apply_record, true);
+                $equipment_apply_record_array = json_decode($equipment_apply_recordJSON, true);
+                $processJSON = json_encode($process, true);
+                $process_array = json_decode($processJSON, true);
+                $information = (object) array_merge($record_array, $equipment_apply_record_array, $process_array);
                 $notification = Notification::create([
                     'permission' => $process->department,
                     'title' => $process->contract_name,
-                    'body' => json_encode($process),
+                    'body' => json_encode($information),
                     'category' => 'purchaseMonitor',
                     'n_category' => 'paymentProcess',
                     'type' => 'wait',
@@ -156,10 +203,19 @@ class PaymentProcessRecordsController extends Controller
             'assessment' => null,
             'payment_voucher_file' => null,
         ]);
+        $recordJSON = json_encode($record, true);
+        $record_array = json_decode($recordJSON, true);
+        $contract = Contract::find($process->contract_id);
+        $equipment_apply_record = EquipmentApplyRecord::find($contract->equipment_apply_record_id);
+        $equipment_apply_recordJSON = json_encode($equipment_apply_record, true);
+        $equipment_apply_record_array = json_decode($equipment_apply_recordJSON, true);
+        $processJSON = json_encode($process, true);
+        $process_array = json_decode($processJSON, true);
+        $information = (object) array_merge($record_array, $equipment_apply_record_array, $process_array);
         $notification = Notification::create([
             'permission' => $process->department,
             'title' => $process->contract_name,
-            'body' => json_encode($process),
+            'body' => json_encode($information),
             'category' => 'purchaseMonitor',
             'n_category' => 'paymentProcess',
             'type' => 'apply',

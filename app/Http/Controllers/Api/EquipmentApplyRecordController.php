@@ -201,16 +201,20 @@ class EquipmentApplyRecordController extends Controller
                     'type' => 'warehouse',
                     'link' => '/apply/equipment/detail#update&' . $record->id,
                 ]);
+                $record->notification()->delete();
+                $record->notification()->save($notification);
                 break;
             case 'warehouse':
                 $attributes = $request->only(['warehousing_date']);
                 $attributes['status'] = '8';
                 $contract =  $record->contract()->first();
+                $json = json_encode($contract, true);
+                $contract_array = json_decode($json, true);
                 $information = (object) array_merge([
                     'equipment' => $record->equipment,
                     'count' => $record->count,
                     'budget' => $record->budget,
-                ], (array) $contract);
+                ], $contract_array);
                 $notification = Notification::create([
                     'permission' => 'can_apply_equipment',
                     'title' => $record->equipment,

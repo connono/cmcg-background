@@ -53,6 +53,22 @@ class NotificationsController extends Controller
             $notifications_process = Notification::where('permission', 'can_warehouse_equipment')->get();
             $notifications = $notifications->merge($notifications_process);
         }
+        if ($user->can('can_document_payment_process_record')) {
+            $notifications_process = Notification::where('permission', 'can_document_payment_process_record')->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_finance_audit_payment_process_record')) {
+            $notifications_process = Notification::where('permission', 'can_finance_audit_payment_process_record')->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_dean_audit_payment_process_record')) {
+            $notifications_process = Notification::where('permission', 'can_dean_audit_payment_process_record')->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_process_payment_process_record')) {
+            $notifications_process = Notification::where('permission', 'can_process_payment_process_record')->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
         return  NotificationResource::collection($notifications);
     }
 

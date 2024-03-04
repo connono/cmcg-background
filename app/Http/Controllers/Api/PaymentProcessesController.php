@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\EquipmentApplyRecord;
 use Illuminate\Http\Request;
 use App\Models\PaymentProcess;
-use App\Models\Department;
 use App\Models\Contract;
+use App\Models\Notification;
 use App\Http\Resources\PaymentProcessResource;
 
 class PaymentProcessesController extends Controller
@@ -44,6 +45,7 @@ class PaymentProcessesController extends Controller
         $process->target_amount = $request->target_amount;
         $process->records_count = 0;
         $process->assessments_count = 0;
+        $process->status = 'wait';
         $process->save();
 
         if ($request->contract_id) {
@@ -53,6 +55,24 @@ class PaymentProcessesController extends Controller
                 'contract_name' => $contract_name,
             ]);
             $contract->processes()->save($process);
+            $record = EquipmentApplyRecord::find($contract->equipment_apply_record_id);
+            $record->notification()->delete();
+            $recordJSON = json_encode($record, true);
+            $record_array = json_decode($recordJSON, true);
+            $processJSON = json_encode($process, true);
+            $process_array = json_decode($processJSON, true);
+            $information = (object) array_merge($record_array, $process_array);
+            $notification = Notification::create([
+                'permission' => $process->department,
+                'title' => $process->contract_name,
+                'body' => json_encode($information),
+                'category' => 'purchaseMonitor',
+                'n_category' => 'paymentProcess',
+                'type' => 'wait',
+                'link' => '/purchase/paymentProcess',
+            ]);
+            $process->notification()->delete();
+            $process->notification()->save($notification);
         }
 
         return new PaymentProcessResource($process);

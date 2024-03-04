@@ -73,6 +73,8 @@ class ContractController extends Controller
             $equipment_apply_record = EquipmentApplyRecord::find($request->equipment_apply_record_id);
             $equipment_apply_record->contract()->save($contract);
             $equipment_apply_record->update([
+                'price' => $contract->price,
+                'purchase_picture' => $contract->contract_file,
                 'status' => '5'
             ]);
             $notification = Notification::create([
