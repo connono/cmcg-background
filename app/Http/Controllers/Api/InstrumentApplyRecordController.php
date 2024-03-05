@@ -20,6 +20,9 @@ class InstrumentApplyRecordController extends Controller
         if (!is_null($request->status)) {
             $query = $query->where('status', $request->status);
         }
+        if (!is_null($request->type)) {
+            $query = $query->where('type', $request->type);
+        }
         if (!is_null($request->instrument)) {
             $query = $query->where('instrument', 'like', '%'.$request->instrument.'%');
         }
@@ -78,6 +81,7 @@ class InstrumentApplyRecordController extends Controller
             'count' => $request->count,
             'budget' => $request->budget,
             'apply_picture' => $request->apply_picture,
+            'type' => $request->type,
         ]);
 
         $record->department = $department->label;

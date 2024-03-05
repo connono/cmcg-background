@@ -28,6 +28,7 @@ class InstrumentApplyRecord extends Model
         'isAdvance',        // 是否垫付
         'advance_status',   // 垫付状态
         'advance_record_id',
+        'type', //类型
     ];
 
     public function advanceRecord(): BelongsTo

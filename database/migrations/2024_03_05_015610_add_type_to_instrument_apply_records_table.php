@@ -13,9 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('advance_records', function (Blueprint $table) {
-            if(!Schema::hasColumn('advance_records', 'document_file')) {
-                $table->integer('document_file')->nullable()->comment('关联设备申请记录外键');
+        Schema::table('instrument_apply_records', function (Blueprint $table) {
+            if(!Schema::hasColumn('instrument_apply_records', 'type')) {
+                $table->string('type')->nullable()->comment('器械类型');
             }
         });
     }
@@ -27,9 +27,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('advance_records', function (Blueprint $table) {
-            if(Schema::hasColumn('advance_records', 'document_file')) {
-                $table->dropColumn(['document_file']);
+        Schema::table('instrument_apply_records', function (Blueprint $table) {
+            if(Schema::hasColumn('instrument_apply_records', 'type')) {
+                $table->dropColumn(['type']);
             }
         });
     }
