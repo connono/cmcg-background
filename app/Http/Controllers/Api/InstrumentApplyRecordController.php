@@ -7,7 +7,7 @@ use App\Models\Department;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Resources\InstrumentApplyRecordResource;
-use App\Http\Requests\Api\InstrumentApplyRecordRequest;
+use App\Models\Notification;
 
 class InstrumentApplyRecordController extends Controller
 {
@@ -85,6 +85,19 @@ class InstrumentApplyRecordController extends Controller
         $record->status = '1';
         $record->save();
 
+        $notification = Notification::create([
+            'permission' => 'can_survey_instrument',
+            'title' => $record->instrument,
+            'body' => json_encode($record, true),
+            'category' => 'apply',
+            'n_category' => 'instrumentApplyRecord',
+            'type' => 'survey',
+            'link' => '/apply/instrument/detail#update&' . $record->id,
+        ]);
+
+        $record->notification()->delete();
+        $record->notification()->save($notification);
+
         \Cache::forget('instrument_serial_number_'.$request->serial_number);
 
         return new InstrumentApplyRecordResource($record);
@@ -95,14 +108,47 @@ class InstrumentApplyRecordController extends Controller
             case 'survey':
                 $attributes = $request->only(['survey_date','survey_picture']);
                 $attributes['status'] = '2';
+                $notification = Notification::create([
+                    'permission' => 'can_contract_instrument',
+                    'title' => $record->instrument,
+                    'body' => json_encode($record, true),
+                    'category' => 'apply',
+                    'n_category' => 'instrumentApplyRecord',
+                    'type' => 'contract',
+                    'link' => '/apply/instrument/detail#update&' . $record->id,
+                ]);
+                $record->notification()->delete();
+                $record->notification()->save($notification);
                 break;
             case 'purchase':
                 $attributes = $request->only(['price','purchase_picture']);
                 $attributes['status'] = '3';
+                $notification = Notification::create([
+                    'permission' => 'can_install_instrument',
+                    'title' => $record->instrument,
+                    'body' => json_encode($record, true),
+                    'category' => 'apply',
+                    'n_category' => 'instrumentApplyRecord',
+                    'type' => 'install',
+                    'link' => '/apply/instrument/detail#update&' . $record->id,
+                ]);
+                $record->notification()->delete();
+                $record->notification()->save($notification);
                 break;
             case 'install':
                 $attributes = $request->only(['install_date','install_picture']);
                 $attributes['status'] = '4';
+                $notification = Notification::create([
+                    'permission' => 'can_engineer_approve_instrument',
+                    'title' => $record->instrument,
+                    'body' => json_encode($record, true),
+                    'category' => 'apply',
+                    'n_category' => 'instrumentApplyRecord',
+                    'type' => 'engineer_approve',
+                    'link' => '/apply/instrument/detail#update&' . $record->id,
+                ]);
+                $record->notification()->delete();
+                $record->notification()->save($notification);
                 break;
             case 'engineer_approve':
                 $attributes = $request->only(['isAdvance']);

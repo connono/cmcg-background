@@ -40,4 +40,10 @@ class InstrumentApplyRecord extends Model
     {
         return $this->hasOne(Contract::class);
     }
+
+    public function notification(): HasOne
+    {
+        return $this->hasOne(\App\Models\Notification::class);
+    }
+
 }

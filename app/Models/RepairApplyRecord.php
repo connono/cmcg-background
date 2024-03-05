@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use AdvanceRecord;
 
 class RepairApplyRecord extends Model
@@ -30,6 +31,7 @@ class RepairApplyRecord extends Model
 
     public function advanceRecord(): BelongsTo
     {
-        return $this->belongsTo(AdvanceRecord::class);
+        return $this->belongsTo(\App\Models\AdvanceRecord::class);
     }
+
 }

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\RepairApplyRecord;
 use App\Models\Department;
 use App\Http\Resources\RepairApplyRecordResource;
+use App\Models\Notification;
 
 class RepairApplyRecordController extends Controller
 {
@@ -102,6 +103,7 @@ class RepairApplyRecordController extends Controller
                 $attributes = $request->only(['isAdvance']);
                 $attributes['advance_status'] = '0';
                 $attributes['status'] = '3';
+                break;
         }
         $record->update($attributes);
         return new RepairApplyRecordResource($record);
