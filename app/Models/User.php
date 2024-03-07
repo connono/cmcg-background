@@ -9,6 +9,7 @@ use Laravel\Sanctum\HasApiTokens;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Department;
 
 class User extends Authenticatable implements JWTSubject
@@ -51,5 +52,10 @@ class User extends Authenticatable implements JWTSubject
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
     }
 }

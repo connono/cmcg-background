@@ -12,6 +12,21 @@ class DepartmentController extends Controller
 {
     public function index(Request $request, Department $department){
         $query = $department->query();
+        if (!is_null($request->is_functional)) {
+            $query = $query->where('is_functional', '' . $request->is_functional);
+        }
+        $departments = $query->get();
+        return response()->json([
+            'data' => $departments,
+        ])->setStatusCode(201);
+    }
+
+    public function engineerIndex(Request $request, Department $department){
+        $query = $department->query();
+        $query = $query->whereNull('engineer_id');
+        if (!is_null($request->is_functional)) {
+            $query = $query->where('is_functional', '' . $request->is_functional);
+        }
         $departments = $query->get();
         return response()->json([
             'data' => $departments,

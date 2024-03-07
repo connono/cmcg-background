@@ -34,4 +34,10 @@ class RepairApplyRecord extends Model
         return $this->belongsTo(\App\Models\AdvanceRecord::class);
     }
 
+    public function notification(): HasOne
+    {
+        return $this->hasOne(\App\Models\Notification::class);
+    }
+
+
 }

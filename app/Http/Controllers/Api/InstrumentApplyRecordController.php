@@ -158,6 +158,7 @@ class InstrumentApplyRecordController extends Controller
                 $attributes = $request->only(['isAdvance']);
                 $attributes['status'] = '5';
                 $attributes['advance_status'] = '0';
+                $record->notification()->delete();
                 break;
         }
         $record->update($attributes);

@@ -13,6 +13,7 @@ class NotificationsController extends Controller
 {
     public function index(Request $request, User $user, Notification $notificaiton) {
         $notifications = new Collection();
+        
         if ($user->department == '医学工程科'){
             if ($user->can('can_engineer_approve_equipment')) {
                 $notifications = Notification::where('permission', '医学工程科')->get();
@@ -20,6 +21,8 @@ class NotificationsController extends Controller
         } else {
             $notifications = Notification::where('permission', $user->department)->get();
         }
+        $notifications_user = Notification::where("user_id", $user->id)->get();
+        $notifications = $notifications->merge($notifications_user);
         if ($user->can('can_audit_payment_record')) {
             $notifications_audit = Notification::where('permission', 'can_audit_payment_record')->get();
             $notifications = $notifications->merge($notifications_audit);
@@ -90,6 +93,10 @@ class NotificationsController extends Controller
         }
         if ($user->can('can_engineer_approve_instrument')) {
             $notifications_process = Notification::where('permission', 'can_engineer_approve_instrument')->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_engineer_approve_repair')) {
+            $notifications_process = Notification::where('permission', 'can_engineer_approve_repair')->get();
             $notifications = $notifications->merge($notifications_process);
         }
         return  NotificationResource::collection($notifications);

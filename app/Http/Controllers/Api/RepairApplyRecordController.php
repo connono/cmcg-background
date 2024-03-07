@@ -8,6 +8,7 @@ use App\Models\RepairApplyRecord;
 use App\Models\Department;
 use App\Http\Resources\RepairApplyRecordResource;
 use App\Models\Notification;
+use App\Models\User;
 
 class RepairApplyRecordController extends Controller
 {
@@ -80,13 +81,29 @@ class RepairApplyRecordController extends Controller
             'budget' => $request->budget,
             'equipment' => $request->equipment,
             'apply_date' => $request->apply_date,
-            'apply_file' => $request->apply_file,
         ]);
 
+        $record->apply_file = $request->apply_file;
         $record->department = $department->label;
         $record->serial_number = $request->serial_number;
         $record->status = '1';
         $record->save();
+
+        $engineer_id = $department->engineer_id;
+        $user = User::where('engineer_id', $engineer_id)->first();
+
+        $notification = Notification::create([
+            'permission' => 'can_install_repair',
+            'title' => $record->equipment,
+            'body' => json_encode($record, true),
+            'category' => 'apply',
+            'n_category' => 'repairApplyRecord',
+            'type' => 'install',
+            'link' => '/apply/maintain/detail#update&' . $record->id,
+            'user_id' => $user->id,
+        ]);
+        $record->notification()->delete();
+        $record->notification()->save($notification);
 
         \Cache::forget('repair_serial_number_'.$request->serial_number);
 
@@ -98,14 +115,27 @@ class RepairApplyRecordController extends Controller
             case 'install':
                 $attributes = $request->only(['price','install_file']);
                 $attributes['status'] = '2';
+                $record->update($attributes);
+                $notification = Notification::create([
+                    'permission' => 'can_engineer_approve_repair',
+                    'title' => $record->equipment,
+                    'body' => json_encode($record, true),
+                    'category' => 'apply',
+                    'n_category' => 'repairApplyRecord',
+                    'type' => 'engineer_approve',
+                    'link' => '/apply/maintain/detail#update&' . $record->id,
+                ]);
+                $record->notification()->delete();
+                $record->notification()->save($notification);
                 break;
             case 'engineer_approve':
                 $attributes = $request->only(['isAdvance']);
                 $attributes['advance_status'] = '0';
                 $attributes['status'] = '3';
+                $record->update($attributes);
+                $record->notification()->delete();
                 break;
         }
-        $record->update($attributes);
         return new RepairApplyRecordResource($record);
     }
 

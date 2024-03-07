@@ -18,6 +18,7 @@ class Notification extends Model
         'category',
         'n_category',
         'type',
+        'user_id',
     ];
 
     public function plan(): BelongsTo

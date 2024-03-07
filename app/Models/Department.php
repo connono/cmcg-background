@@ -15,6 +15,7 @@ class Department extends Model
         'name',
         'label',
         'is_functional',
+        'engineer_id',
     ];
 
     public function users(): HasMany

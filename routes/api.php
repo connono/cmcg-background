@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ContractController;
 use App\Http\Controllers\Api\PaymentProcessRecordsController;
+use App\Http\Controllers\Api\EngineersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UsersController;
@@ -52,6 +53,14 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('users.reset');
     Route::delete('users/{user}',[UsersController::class, 'delete'])
         ->name('users.delete');
+    Route::get('engineers/index', [EngineersController::class,'index'])
+        ->name('engineers.index');
+    Route::post('engineers', [EngineersController::class,'store'])
+        ->name('engineers.store');
+    Route::post('engineers/{engineer}', [EngineersController::class,'update'])
+        ->name('engineers.update');
+    Route::delete('engineers/{engineer}', [EngineersController::class,'delete'])
+        ->name('engineers.delete');
     Route::get('equipment/index',[EquipmentApplyRecordController::class, 'index'])
         ->name('equipment.index');
     Route::get('equipment/item',[EquipmentApplyRecordController::class, 'getItem'])
@@ -152,6 +161,8 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('notifications.index');
     Route::get('department/index',[DepartmentController::class, 'index'])
         ->name('department.index');
+    Route::get('department/engineer/index',[DepartmentController::class, 'engineerIndex'])
+        ->name('department.engineer.index');
     Route::get('advance/records/index',[AdvanceRecordController::class, 'index'])
         ->name('advance.records.index');
     Route::get('advance/records/getItem',[AdvanceRecordController::class, 'getItem'])

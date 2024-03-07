@@ -57,11 +57,16 @@ class UsersController extends Controller
     public function delete(Request $request, User $user){
         $user->syncRoles([]);
         $user->delete();
-        return response()->json([])->setStatusCode(201);
+        return response()->json([])->setStatusCode(200);
     }
     
     public function index(Request $request, User $user){
         $query = $user->query();
+
+        if (!is_null($request->department)) {
+            $query = $query->where('department', $request->department);
+        }
+
         $users = $query->paginate();
         
         return  UserResource::collection($users);
