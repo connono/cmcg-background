@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PaymentPlanResource;
 use App\Http\Resources\PaymentProcessResource;
+use App\Models\Department;
 use Illuminate\Http\Request;
 use App\Models\Contract;
 use App\Models\User;
@@ -38,7 +39,7 @@ class ContractController extends Controller
             $query = $query->where('isImportant', $request->isImportant);
         }
 
-        $contracts = $query->get();
+        $contracts = $query->paginate();
         
         return  ContractResource::collection($contracts);
     }
@@ -77,6 +78,9 @@ class ContractController extends Controller
                 'purchase_picture' => $contract->contract_file,
                 'status' => '5'
             ]);
+            $department = Department::where('label', $equipment_apply_record->department)->first();
+            $engineer_id = $department->engineer_id;
+            $user = User::where('engineer_id', $engineer_id)->first();
             $notification = Notification::create([
                 'permission' => 'can_install_equipment',
                 'title' => $equipment_apply_record->equipment,
@@ -85,6 +89,7 @@ class ContractController extends Controller
                 'n_category' => 'equipmentApplyRecord',
                 'type' => 'install',
                 'link' => '/apply/equipment/detail#update&' . $equipment_apply_record->id,
+                'user_id' => $user->id,
             ]);
             $equipment_apply_record->notification()->delete();
             $equipment_apply_record->notification()->save($notification);

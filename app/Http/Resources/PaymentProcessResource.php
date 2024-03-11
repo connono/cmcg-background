@@ -16,6 +16,10 @@ class PaymentProcessResource extends JsonResource
      */
     public function toArray($request)
     {
+        $equipment_apply_record = EquipmentApplyRecord::find(Contract::find($this->contract_id)->equipment_apply_record_id);
+        $warehousing_date = $equipment_apply_record ? $equipment_apply_record->warehousing_date : null;
+        $install_picture = $equipment_apply_record ? $equipment_apply_record->install_picture : null;
+
         return [
             "id"=> $this->id,
             "contract_name"=> $this->contract_name,
@@ -33,8 +37,8 @@ class PaymentProcessResource extends JsonResource
             "status"=> $this->status,
             "current_payment_record_id"=> $this->current_payment_record_id,
             "contract_id"=> $this->contract_id,
-            'warehousing_date' => EquipmentApplyRecord::find(Contract::find($this->contract_id)->equipment_apply_record_id)->warehousing_date,
-            'install_picture' => EquipmentApplyRecord::find(Contract::find($this->contract_id)->equipment_apply_record_id)->install_picture,
+            'warehousing_date' => $warehousing_date,
+            'install_picture' => $install_picture,
         ];
     }
 }

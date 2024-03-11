@@ -216,7 +216,7 @@ class EquipmentApplyRecordController extends Controller
                     'budget' => $record->budget,
                 ], $contract_array);
                 $notification = Notification::create([
-                    'permission' => 'can_apply_equipment',
+                    'permission' => 'can_engineer_approve_equipment',
                     'title' => $record->equipment,
                     'body' => json_encode($information),
                     'category' => 'apply',

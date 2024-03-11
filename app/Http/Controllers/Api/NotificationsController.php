@@ -35,10 +35,6 @@ class NotificationsController extends Controller
             $notifications_process = Notification::where('permission', 'can_apply_equipment')->get();
             $notifications = $notifications->merge($notifications_process);
         }
-        if ($user->can('can_install_equipment')) {
-            $notifications_process = Notification::where('permission', 'can_install_equipment')->get();
-            $notifications = $notifications->merge($notifications_process);
-        }
         if ($user->can('can_survey_equipment')) {
             $notifications_process = Notification::where('permission', 'can_survey_equipment')->get();
             $notifications = $notifications->merge($notifications_process);
