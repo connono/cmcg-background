@@ -34,7 +34,11 @@ class EquipmentApplyRecordController extends Controller
         if (!is_null($request->isAdvance)) {
             $query = $query->where('isAdvance', $request->isAdvance);
         }
-        $records = $query->paginate();
+        if (!is_null($request->isPaginate)) {
+            $records = $query->paginate();
+        } else {
+            $records = $query->get();
+        }
         
         return  EquipmentApplyRecordResource::collection($records);
     }

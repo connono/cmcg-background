@@ -30,7 +30,11 @@ class RepairApplyRecordController extends Controller
         if (!is_null($request->equipment)) {
             $query = $query->where('equipment', 'like', '%'.$request->equipment.'%');
         }
-        $records = $query->paginate();
+        if (!is_null($request->isPaginate)) {
+            $records = $query->paginate();
+        } else {
+            $records = $query->get();
+        }
         
         return  RepairApplyRecordResource::collection($records);
     }

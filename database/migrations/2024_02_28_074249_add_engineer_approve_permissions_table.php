@@ -23,6 +23,10 @@ return new class extends Migration
         Permission::create(['name'=> 'can_back_equipment']);
         Permission::create(['name' => 'can_back_instrument']);
         Permission::create(['name' => 'can_back_repair']);
+        Permission::create(['name' => 'can_apply_equipment']);
+        Permission::create(['name'=> 'can_apply_instrument']);
+        Permission::create(['name'=> 'can_survey_equipment']);
+
 
         $medical_engineering_manager->givePermissionTo('can_engineer_approve_equipment');
         $medical_engineering_manager->givePermissionTo('can_engineer_approve_instrument');
@@ -31,6 +35,11 @@ return new class extends Migration
         $medical_engineering_manager->givePermissionTo('can_back_equipment');
         $medical_engineering_manager->givePermissionTo('can_back_instrument');
         $medical_engineering_manager->givePermissionTo('can_back_repair');
+        $medical_engineering_manager->givePermissionTo('can_apply_equipment');
+        $medical_engineering_manager->givePermissionTo('can_apply_instrument');
+        $medical_engineering_manager->givePermissionTo('can_apply_repair');
+        $medical_engineering_manager->givePermissionTo('can_survey_equipment');
+        
 
         $founder = Role::where('name','网站开发维护者')->first();
         $founder->givePermissionTo('can_engineer_approve_equipment');
@@ -40,6 +49,10 @@ return new class extends Migration
         $founder->givePermissionTo('can_back_equipment');
         $founder->givePermissionTo('can_back_instrument');
         $founder->givePermissionTo('can_back_repair');
+        $founder->givePermissionTo('can_apply_equipment');
+        $founder->givePermissionTo('can_apply_instrument');
+        $founder->givePermissionTo('can_survey_equipment');
+
     }
 
     /**

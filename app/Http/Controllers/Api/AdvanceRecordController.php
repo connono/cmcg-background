@@ -23,8 +23,12 @@ class AdvanceRecordController extends Controller
             $query = $query->where('status', $request->status);
         }
 
-        $records = $query->paginate();
-
+        if (!is_null($request->isPaginate)) {
+            $records = $query->paginate();
+        } else {
+            $records = $query->get();
+        }
+    
         return  AdvanceRecordResource::collection($records);
     }
 

@@ -16,9 +16,6 @@ return new class extends Migration
      */
     public function up()
     {
-
-        $permission = Permission::where('name','can_see_payment_monitor')->first();
-
         $functional_officer = Role::where('name','财务科科长')->first();
         $functional_officer->givePermissionTo(['name' => 'can_see_payment_monitor']);
 

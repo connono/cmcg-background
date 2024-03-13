@@ -22,7 +22,11 @@ class PaymentPlansController extends Controller
         if ($request->contract_name) {
             $query = $query->where('contract_name', 'like', '%'.$request->contract_name.'%');
         }
-        $plans = $query->get();
+        if (!is_null($request->isPaginate)) {
+            $plans = $query->paginate();
+        } else {
+            $plans = $query->get();
+        }
         
         return  PaymentPlanResource::collection($plans);
     }

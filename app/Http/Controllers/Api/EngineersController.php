@@ -14,8 +14,13 @@ class EngineersController extends Controller
     public function index(Request $request, Engineer $engineer)
     {
         $query = $engineer->query();
-        $engineers = $query->paginate();
 
+        if (!is_null($request->isPaginate)) {
+            $engineers = $query->paginate();
+        } else {
+            $engineers = $query->get();
+        }
+        
         return EngineerResource::collection($engineers);
     }
 

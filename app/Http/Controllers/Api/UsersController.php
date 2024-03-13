@@ -67,7 +67,11 @@ class UsersController extends Controller
             $query = $query->where('department', $request->department);
         }
 
-        $users = $query->paginate();
+        if (!is_null($request->isPaginate)) {
+            $users = $query->paginate();
+        } else {
+            $users = $query->get();
+        }
         
         return  UserResource::collection($users);
     }

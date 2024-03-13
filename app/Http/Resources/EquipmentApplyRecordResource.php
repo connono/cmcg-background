@@ -15,7 +15,8 @@ class EquipmentApplyRecordResource extends JsonResource
      */
     public function toArray($request)
     {
-        $contract = EquipmentApplyRecord::find($this->id)->contract()->first();
+        $equipment_apply_record = EquipmentApplyRecord::find($this->id);
+        $contract = $equipment_apply_record ? $equipment_apply_record->contract()->first() : null;
         $contract_id = $contract ? $contract->id : null;
 
         return [

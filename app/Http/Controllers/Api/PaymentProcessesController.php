@@ -23,7 +23,11 @@ class PaymentProcessesController extends Controller
         if ($request->contract_name) {
             $query = $query->where('contract_name', 'like', '%'.$request->contract_name.'%');
         }
-        $processes = $query->get();
+        if (!is_null($request->isPaginate)) {
+            $processes = $query->paginate();
+        } else {
+            $processes = $query->get();
+        }
         return  PaymentProcessResource::collection($processes);
     }
 

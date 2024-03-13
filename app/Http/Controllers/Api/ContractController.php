@@ -39,7 +39,11 @@ class ContractController extends Controller
             $query = $query->where('isImportant', $request->isImportant);
         }
 
-        $contracts = $query->paginate();
+        if (!is_null($request->isPaginate)) {
+            $contracts = $query->paginate();
+        } else {
+            $contracts = $query->get();
+        }
         
         return  ContractResource::collection($contracts);
     }

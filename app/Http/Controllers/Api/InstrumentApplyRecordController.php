@@ -30,7 +30,11 @@ class InstrumentApplyRecordController extends Controller
             $query = $query->where('isAdvance', $request->isAdvance);
         }
 
-        $records = $query->paginate();
+        if (!is_null($request->isPaginate)) {
+            $records = $query->paginate();
+        } else {
+            $records = $query->get();
+        }
         
         return  InstrumentApplyRecordResource::collection($records);
     }
