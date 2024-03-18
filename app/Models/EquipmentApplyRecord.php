@@ -51,6 +51,9 @@ class EquipmentApplyRecord extends Model
         'advance_record_id',
         // 入库
         'warehousing_date', // 入库日期
+        // 中止
+        'is_stop',          //是否终止
+        'stop_reason',      //终止原因
     ];
 
     public function advanceRecord(): BelongsTo

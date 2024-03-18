@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\EquipmentApplyRecord;
 use App\Models\Department;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use App\Http\Resources\EquipmentApplyRecordResource;
 use App\Http\Requests\Api\EquipmentApplyRecordRequest;
@@ -20,7 +21,11 @@ class EquipmentApplyRecordController extends Controller
             $query = $query->where('department', $department->label);
         }
         if (!is_null($request->status)) {
-            $query = $query->where('status', $request->status);
+            if ($request->status == 'stop') {
+                $query = $query->where('is_stop', 'true');
+            } else {
+                $query = $query->where('is_stop', 'false')->orWhere('is_stop', null)->where('status', $request->status);
+            }
         }
         if (!is_null($request->equipment)) {
             $query = $query->where('equipment', 'like', '%'.$request->equipment.'%');
@@ -117,24 +122,30 @@ class EquipmentApplyRecordController extends Controller
     public function update(EquipmentApplyRecordRequest $request, $method, EquipmentApplyRecord $record){
         switch($request->method){
             case 'survey':
-                $attributes = $request->only(['survey_date','purchase_type','survey_record','meeting_record', 'survey_picture']);
+                $attributes = $request->only(['survey_date','purchase_type','survey_record','meeting_record', 'survey_picture', 'is_stop', 'stop_reason']);
                 $attributes['status'] = '2';
-                $notification = Notification::create([
-                    'permission' => 'can_approve_equipment',
-                    'title' => $record->equipment,
-                    'body' => json_encode($record),
-                    'category' => 'apply',
-                    'n_category' => 'equipmentApplyRecord',
-                    'type' => 'approve',
-                    'link' => '/apply/equipment/detail#update&' . $record->id,
-                ]);
-                $record->notification()->delete();
-                $record->notification()->save($notification);
+                $record->update($attributes);
+                if ($request->is_stop == 'true') {
+                    $record->notification()->delete();
+                } else {
+                    $notification = Notification::create([
+                        'permission' => 'can_approve_equipment',
+                        'title' => $record->equipment,
+                        'body' => json_encode($record),
+                        'category' => 'apply',
+                        'n_category' => 'equipmentApplyRecord',
+                        'type' => 'approve',
+                        'link' => '/apply/equipment/detail#update&' . $record->id,
+                    ]);
+                    $record->notification()->delete();
+                    $record->notification()->save($notification);
+                }
                 break;
             case 'approve':
                 $attributes = $request->only(['approve_date','execute_date', 'approve_picture']);
                 if ($record->purchase_type == 1) {
                     $attributes['status'] = '3';
+                    $record->update($attributes);
                     $notification = Notification::create([
                         'permission' => 'can_tender_equipment',
                         'title' => $record->equipment,
@@ -148,6 +159,7 @@ class EquipmentApplyRecordController extends Controller
                     $record->notification()->save($notification);    
                 } else {
                     $attributes['status'] = '4';
+                    $record->update($attributes);
                     $notification = Notification::create([
                         'permission' => 'can_contract_equipment',
                         'title' => $record->equipment,
@@ -164,6 +176,7 @@ class EquipmentApplyRecordController extends Controller
             case 'tender':
                 $attributes = $request->only(['tender_date','tender_out_date', 'tender_file', 'tender_boardcast_file', 'bid_winning_file', 'send_tender_file']);
                 $attributes['status'] = '4';
+                $record->update($attributes);
                 $notification = Notification::create([
                     'permission' => 'can_contract_equipment',
                     'title' => $record->equipment,
@@ -180,6 +193,7 @@ class EquipmentApplyRecordController extends Controller
                 $attributes = $request->only(['install_date', 'install_picture']);
                 $attributes['status'] = '6';
                 $attributes['advance_status'] = '0';
+                $record->update($attributes);
                 $notification = Notification::create([
                     'permission' => 'can_engineer_approve_equipment',
                     'title' => $record->equipment,
@@ -196,6 +210,7 @@ class EquipmentApplyRecordController extends Controller
                 $attributes = $request->only(['isAdvance']);
                 $attributes['status'] = '7';
                 $attributes['advance_status'] = '0';
+                $record->update($attributes);
                 $notification = Notification::create([
                     'permission' => 'can_warehouse_equipment',
                     'title' => $record->equipment,
@@ -211,6 +226,7 @@ class EquipmentApplyRecordController extends Controller
             case 'warehouse':
                 $attributes = $request->only(['warehousing_date']);
                 $attributes['status'] = '8';
+                $record->update($attributes);
                 $contract =  $record->contract()->first();
                 $json = json_encode($contract, true);
                 $contract_array = json_decode($json, true);
@@ -232,7 +248,6 @@ class EquipmentApplyRecordController extends Controller
                 $record->notification()->save($notification);
                 break;
         }
-        $record->update($attributes);
         return new EquipmentApplyRecordResource($record);
     }
 

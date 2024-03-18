@@ -53,6 +53,8 @@ class EquipmentApplyRecordResource extends JsonResource
             "advance_status"=> $this->advance_status,
             "advance_record_id"=> $this->advance_record_id,
             "warehousing_date"=> $this->warehousing_date,
+            "is_stop" => $this->is_stop,
+            "stop_reason" => $this->stop_reason,
             "contract_id"=> $contract_id,
         ];
     }
