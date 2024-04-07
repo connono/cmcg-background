@@ -14,7 +14,7 @@ class PaymentProcessesController extends Controller
 {
     public function index(Request $request, PaymentProcess $process){
         $query = $process->query();
-        if ($request->department && $request->department !== '财务科') {
+        if ($request->department && $request->department !== '财务科' && $request->department !== '院办') {
             $query = $query->where('department', $request->department);
         }
         if ($request->status) {

@@ -38,6 +38,7 @@ class PaymentProcessRecordsController extends Controller
         $process->update([
             'next_date' => $request->next_date,
             'current_payment_record_id' => $record->id,
+            'status' => 'apply',
         ]);
         if($process->notification()) $process->notification()->delete();
 

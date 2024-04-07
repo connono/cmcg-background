@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ContractController;
+use App\Http\Controllers\Api\LeaderController;
 use App\Http\Controllers\Api\PaymentProcessRecordsController;
 use App\Http\Controllers\Api\EngineersController;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ use App\Http\Controllers\Api\PaymentRecordsController;
 use App\Http\Controllers\Api\NotificationsController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\AdvanceRecordController;
-
+use App\Http\Controllers\Api\ComsumableItemApplyRecordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +54,8 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('users.reset');
     Route::delete('users/{user}',[UsersController::class, 'delete'])
         ->name('users.delete');
+    Route::get('department/leader/index',[DepartmentController::class, 'leaderIndex'])
+        ->name('department.leader.index');
     Route::get('engineers/index', [EngineersController::class,'index'])
         ->name('engineers.index');
     Route::post('engineers', [EngineersController::class,'store'])
@@ -61,6 +64,14 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('engineers.update');
     Route::delete('engineers/{engineer}', [EngineersController::class,'delete'])
         ->name('engineers.delete');
+    Route::get('leaders/index', [LeaderController::class,'index'])
+        ->name('leaders.index');
+    Route::post('leaders', [LeaderController::class,'store'])
+        ->name('leaders.store');
+    Route::post('leaders/{leader}', [LeaderController::class,'update'])
+        ->name('leaders.update');
+    Route::delete('leaders/{leader}', [LeaderController::class,'delete'])
+        ->name('leaders.delete');
     Route::get('equipment/index',[EquipmentApplyRecordController::class, 'index'])
         ->name('equipment.index');
     Route::get('equipment/item',[EquipmentApplyRecordController::class, 'getItem'])
@@ -195,6 +206,13 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('payment.contracts.plans.delete');
     Route::delete('payment/contracts/processes/delete/{contract}',[ContractController::class, 'deleteProcess'])
         ->name('payment.contracts.processes.delete');
+    Route::get('comsumable/apply/index',[ComsumableItemApplyRecordController::class, 'index'])
+        ->name('comsumable.apply.index');
+    Route::get('comsumable/apply/getItem',[ComsumableItemApplyRecordController::class,'getItem'])
+        ->name('comsumable.apply.getItem');
+    Route::post('comsumable/apply/store',[ComsumableItemApplyRecordController::class, 'store'])
+        ->name('comsumable.apply.store');
+    
     Route::middleware('auth:api')->group(function() {
         // 当前登录用户信息
         Route::get('user', [UsersController::class, 'me'])
