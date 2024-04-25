@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Http\Requests\Api\UserRequest;
-use Illuminate\Auth\AuthenticationException;
 
 class UsersController extends Controller
 {
@@ -81,6 +80,12 @@ class UsersController extends Controller
         $user->update([
             'password' => bcrypt($password)
         ]);
+        return new UserResource($user);
+    }
+
+    public function setSignature(Request $request, User $user){
+        $attributes = $request->only(['signature_picture']);
+        $user->update($attributes);
         return new UserResource($user);
     }
 }

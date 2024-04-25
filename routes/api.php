@@ -54,6 +54,8 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('users.reset');
     Route::delete('users/{user}',[UsersController::class, 'delete'])
         ->name('users.delete');
+    Route::post('users/setSignature/{user}',[UsersController::class,'setSignature'])
+        ->name('users.setSignature');
     Route::get('department/leader/index',[DepartmentController::class, 'leaderIndex'])
         ->name('department.leader.index');
     Route::get('engineers/index', [EngineersController::class,'index'])
