@@ -20,9 +20,16 @@ class LeaderResource extends JsonResource
             $departmentString .= $department->label .'&';
         }
 
+        $chief_departments =  $this->chief_departments()->get();
+        foreach ($chief_departments as $chief_department) {
+            $departmentString .= $chief_department->label .'&';
+        }
+
+
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'type' => $this->type,
             'departments' => $departmentString,
         ];
     }

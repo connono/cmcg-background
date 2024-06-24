@@ -29,23 +29,41 @@ class LeaderController extends Controller
         $user = User::find($request->user_id);
         $leader = Leader::create([
             'name' =>  $user->name,
+            'type' => $request->type,
         ]);
         $leader->user()->save($user);
     }
 
     public function update(Request $request, Leader $leader) {
         $departments = $leader->departments()->get();
-        $departments->each(function ($department) {
-            $department->update([
-                'leader_id' => null,
-            ]);
-        });
+        if ($leader->type == 'leader') {
+            $departments->each(function ($department) {
+                $department->update([
+                    'leader_id' => null,
+                ]);
+            });            
+        } else if ($leader->type == 'chief_leader') {
+            $departments->each(function ($department) {
+                $department->update([
+                    'chief_leader_id' => null,
+                ]);
+            });   
+        }
             
         $department_ids = explode('&', $request->department_id);
         foreach ($department_ids as $department_id) {
             $department = Department::where('name', $department_id)->where('is_functional', '1')->first();
             if ($department) {
-                $leader->departments()->save($department);
+                if ($leader->type == 'leader') {
+                    $department->update([
+                        'leader_id' => $leader->id,
+                    ]);
+                } else if ($leader->type == 'chief_leader') {
+                    $department->update([
+                        'chief_leader_id' => $leader->id,
+                    ]);
+                    return $department;
+                } 
             }
         }
         return new LeaderResource($leader);

@@ -13,6 +13,7 @@ class Leader extends Model
 
     protected $fillable = [
         'name',
+        'type',
     ];
 
     public function user(): HasOne
@@ -23,5 +24,10 @@ class Leader extends Model
     public function departments(): HasMany
     {
         return $this->hasMany(\App\Models\Department::class);
+    }
+
+    public function chief_departments(): HasMany
+    {
+        return $this->hasMany(\App\Models\Department::class, 'chief_leader_id');
     }
 }

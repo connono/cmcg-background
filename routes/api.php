@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ContractController;
 use App\Http\Controllers\Api\LeaderController;
+use App\Http\Controllers\Api\PaymentDocumentController;
 use App\Http\Controllers\Api\PaymentProcessRecordsController;
 use App\Http\Controllers\Api\EngineersController;
 use Illuminate\Http\Request;
@@ -214,7 +215,20 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('comsumable.apply.getItem');
     Route::post('comsumable/apply/store',[ComsumableItemApplyRecordController::class, 'store'])
         ->name('comsumable.apply.store');
-    
+    Route::get('payment/document/records/index', [PaymentDocumentController::class, 'index'])
+        ->name('payment.document.records.index');
+    Route::get('payment/document/records/item/{record}', [PaymentDocumentController::class, 'item'])
+        ->name('payment.document.records.item');
+    Route::get('payment/document/records/getDocumentRecordList', [PaymentProcessRecordsController::class, 'getDocumentRecordList'])
+        ->name('payment.document.records.getDocumentRecordList');
+    Route::post('payment/document/records/store', [PaymentDocumentController::class, 'store'])
+        ->name('payment.document.records.store');
+    Route::post('payment/document/records/storeXlsx/{record}', [PaymentDocumentController::class, 'storeXlsx'])
+        ->name('payment.document.records.storeXlsx');
+    Route::delete('payment/document/records/delete/{record}',[PaymentDocumentController::class, 'delete'])
+        ->name('payment.document.records.delete');
+    Route::post('payment/document/records/update/{record}',[PaymentDocumentController::class, 'update'])
+        ->name('payment.document.records.update');
     Route::middleware('auth:api')->group(function() {
         // 当前登录用户信息
         Route::get('user', [UsersController::class, 'me'])

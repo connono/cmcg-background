@@ -19,6 +19,9 @@ class PaymentProcessRecord extends Model
         'payment_voucher_file',
         'assessment_date',
         'payment_file',
+        'payment_terms',
+        'payment_date',
+        'payment_document_id',
     ];
 
     public function process(): BelongsTo

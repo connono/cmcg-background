@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Department;
 use Illuminate\Http\Request;
 use App\Models\PaymentProcess;
 use App\Models\PaymentProcessRecord;
@@ -17,6 +18,12 @@ class PaymentProcessRecordsController extends Controller
         $records = $process->records->diff(PaymentProcessRecord::whereNull('assessment_date')->get());
         
         return  PaymentProcessRecordResource::collection($records);
+    }
+
+    public function getDocumentRecordList(Request $request) {
+        $department = Department::where('name', $request->department)->first();
+        $records = PaymentProcessRecord::where('department', $department->label)->whereNull('payment_document_id')->paginate();
+        return PaymentProcessRecordResource::collection($records);
     }
 
     public function getItem(Request $request, PaymentProcessRecord $record){
@@ -53,6 +60,7 @@ class PaymentProcessRecordsController extends Controller
                 $process->update([
                     'status' => 'document',
                     'assessment' => $request->assessment,
+                    'payment_terms' => $request->payment_terms,
                 ]);
                 $recordJSON = json_encode($record, true);
                 $record_array = json_decode($recordJSON, true);

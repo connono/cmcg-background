@@ -82,7 +82,8 @@ class ContractController extends Controller
                 'purchase_picture' => $contract->contract_file,
                 'status' => '5'
             ]);
-            $department = Department::where('label', $equipment_apply_record->department)->first();
+            $department_string_array = explode(",", $equipment_apply_record->department);
+            $department = Department::where('label', $department_string_array[0])->first();
             $engineer_id = $department->engineer_id;
             $user = User::where('engineer_id', $engineer_id)->first();
             $notification = Notification::create([

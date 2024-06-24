@@ -7,6 +7,7 @@ use App\Models\Department;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use App\Models\Contract;
 use App\Http\Resources\EquipmentApplyRecordResource;
 use App\Http\Requests\Api\EquipmentApplyRecordRequest;
 use App\Models\Notification;
@@ -87,16 +88,14 @@ class EquipmentApplyRecordController extends Controller
             ])->setStatusCode(500);
         }
 
-        $department = Department::where('name', $request->department)->first();
-
         $record = EquipmentApplyRecord::create([
             'equipment' => $request->equipment,
             'count' => $request->count,
+            'department' => $request->department,
             'budget' => $request->budget,
             'apply_type' => $request->apply_type,
             'apply_picture' => $request->apply_picture,
         ]);
-        $record->department = $department->label;
         $record->serial_number = $request->serial_number;
         $record->status = '1';
 
@@ -287,7 +286,7 @@ class EquipmentApplyRecordController extends Controller
                 break;
             case '4':
                 $record->update([
-                    'status' => '3',
+                    'status' => $record->purchase_type == '1' ? '3' : '2', 
                     'tender_date' => null,
                     'tender_file' => null,
                     'tender_boardcast_file' => null,
@@ -299,12 +298,9 @@ class EquipmentApplyRecordController extends Controller
                 break;
             case '5':
                 $record->update([
-                    'status' => $record->purchase_type == '1' ? '4' : '3', 
-                    'purchase_date' => null,
-                    'arrive_date' => null,
-                    'price' => null,
-                    'purchase_picture' => null,
+                    'status' => '4', 
                 ]);
+                Contract::where('equipment_apply_record_id', $record->id)->delete();
                 $record->notification()->delete();
                 break;
             case '6':
