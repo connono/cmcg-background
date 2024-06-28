@@ -25,7 +25,9 @@ class EquipmentApplyRecordController extends Controller
             if ($request->status == 'stop') {
                 $query = $query->where('is_stop', 'true');
             } else {
-                $query = $query->where('is_stop', 'false')->orWhere('is_stop', null)->where('status', $request->status);
+                $query1 = EquipmentApplyRecord::where('is_stop', null)->where('status', '' . $request->status);
+                $query2 = EquipmentApplyRecord::where('is_stop', 'false')->where('status', '' . $request->status);
+                $query = $query1->union($query2);
             }
         }
         if (!is_null($request->equipment)) {
