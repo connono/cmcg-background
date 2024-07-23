@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PaymentDocument extends Model
 {
@@ -25,5 +26,10 @@ class PaymentDocument extends Model
     public function paymentProcessRecords(): HasMany
     {
         return $this->hasMany(\App\Models\PaymentProcessRecord::class);
+    }
+
+    public function notification(): HasOne
+    {
+        return $this->hasOne(\App\Models\Notification::class);
     }
 }
