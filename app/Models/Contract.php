@@ -15,6 +15,7 @@ class Contract extends Model
         'contract_name',
         'series_number',
         'category',
+        'status',
         'contractor',
         'source',
         'price',

@@ -213,7 +213,9 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('payment.contracts.plans.delete');
     Route::delete('payment/contracts/processes/delete/{contract}',[ContractController::class, 'deleteProcess'])
         ->name('payment.contracts.processes.delete');
-   /* Route::get('comsumable/apply/index',[ComsumableItemApplyRecordController::class, 'index'])
+    Route::post('payment/contracts/update/{contract}',[ContractController::class, 'update'])
+        ->name('payment.contracts.update');
+    Route::get('comsumable/apply/index',[ComsumableItemApplyRecordController::class, 'index'])
         ->name('comsumable.apply.index');
     Route::get('comsumable/apply/getItem',[ComsumableItemApplyRecordController::class,'getItem'])
         ->name('comsumable.apply.getItem');

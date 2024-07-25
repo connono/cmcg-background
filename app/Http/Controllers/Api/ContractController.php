@@ -17,7 +17,16 @@ use App\Models\Notification;
 class ContractController extends Controller
 {
     public function index(Request $request, Contract $contract){
+
+        $user = User::find($request->user_id);
+        $department = Department::find($user->department_id);
         $query = $contract->query();
+        if(is_null($department->acronym)) 
+            return response()->json([])->setStatusCode(200);
+        // return $department->acronym;
+        if($department->acronym != 'ALL'){
+            $query = $query->where('department_source', $department->acronym);
+        }
 
         if (!is_null($request->contract_name)) {
             $query = $query->where('contract_name', 'like', '%'.$request->contract_name.'%');
@@ -37,6 +46,10 @@ class ContractController extends Controller
 
         if (!is_null($request->isImportant)) {
             $query = $query->where('isImportant', $request->isImportant);
+        }
+
+        if (!is_null($request->status)) {
+            $query = $query->where('status', $request->status);
         }
 
         if (!is_null($request->isPaginate)) {
@@ -64,16 +77,16 @@ class ContractController extends Controller
             'source' => $request->source,
             'purchase_type' => $request->purchase_type,
             'price' => $request->price,
-            'contract_file' =>  $request->contract_file,
             'isImportant' => $request->isImportant,
             'dean_type' => $request->dean_type,
             'law_advice' => $request->law_advice,
             'comment' => $request->comment,
             'isComplement' => $request->isComplement,
+            'status' => 'approve',
         ]);
-        $series_code = 0;
+        $series_code = 1;
         $len = 5;
-        $series_number = date('Y'). $request->department_source . sprintf("%0{$len}d", $series_code);
+        $series_number = $request->department_source . date('Y'). sprintf("%0{$len}d", $series_code);
         while(Contract::where('series_number', '=', $series_number)->exists()) {
             $series_code++;
             $series_number = date('Y') . date('m') . $request->department_source . sprintf("%0{$len}d", $series_code);
@@ -119,6 +132,43 @@ class ContractController extends Controller
         // $dean = User::find($request->dean_id);
         // $contract->dean()->save($dean);
 
+        return new ContractResource($contract);
+    }
+
+    public function update(Request $request, Contract $contract){
+        switch($request->method){
+            case 'approve':
+                $attributes = ['status' => 'upload'];
+                // $notification = Notification::create([
+                //     'permission' => 'can_contract_instrument',
+                //     'title' => $record->instrument,
+                //     'body' => json_encode($record, true),
+                //     'category' => 'apply',
+                //     'n_category' => 'instrumentApplyRecord',
+                //     'type' => 'contract',
+                //     'link' => '/apply/instrument/detail#update&' . $record->id,
+                // ]);
+                // $record->notification()->delete();
+                // $record->notification()->save($notification);
+                $contract->update($attributes);
+                break;
+            case 'upload':
+                $attributes = $request->only(['contract_file']);
+                $attributes['status'] = 'finish';
+                // $notification = Notification::create([
+                //     'permission' => 'can_install_instrument',
+                //     'title' => $record->instrument,
+                //     'body' => json_encode($record, true),
+                //     'category' => 'apply',
+                //     'n_category' => 'instrumentApplyRecord',
+                //     'type' => 'install',
+                //     'link' => '/apply/instrument/detail#update&' . $record->id,
+                // ]);
+                // $record->notification()->delete();
+                // $record->notification()->save($notification);
+                $contract->update($attributes);
+                break;
+        }
         return new ContractResource($contract);
     }
 
