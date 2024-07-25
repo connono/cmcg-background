@@ -85,11 +85,12 @@ class ContractController extends Controller
             'status' => 'approve',
         ]);
         $series_code = 1;
-        $len = 5;
-        $series_number = $request->department_source . date('Y'). sprintf("%0{$len}d", $series_code);
+        $series_number = $request->department_source . date('Y'). '0' . $series_code;
         while(Contract::where('series_number', '=', $series_number)->exists()) {
             $series_code++;
-            $series_number = date('Y') . date('m') . $request->department_source . sprintf("%0{$len}d", $series_code);
+            if ($series_number >= 100) {
+                $series_number = $request->department_source . date('Y'). $series_code;
+            }
         }
         $contract->series_number = $series_number;
         $contract->save();
