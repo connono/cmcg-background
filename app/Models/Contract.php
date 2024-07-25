@@ -24,6 +24,13 @@ class Contract extends Model
         'contract_file',
         'contract_docx',
         'payment_terms',
+        'type',
+        'complement_code',
+        'department_source',
+        'dean_type',
+        'law_advice',
+        'purchase_type',
+        'category',
     ];
 
     public function manager (): HasOne

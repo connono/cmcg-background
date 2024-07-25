@@ -56,21 +56,27 @@ class ContractController extends Controller
     public function store(Request $request){
         $contract = Contract::create([
             'contract_name' => $request->contract_name,
+            'type' => $request->type,
+            'complement_code' => $request->complement_code,
             'category' => $request->category,
             'contractor' => $request->contractor,
+            'department_source' => $request->department_source,
             'source' => $request->source,
+            'purchase_type' => $request->purchase_type,
             'price' => $request->price,
             'contract_file' =>  $request->contract_file,
             'isImportant' => $request->isImportant,
+            'dean_type' => $request->dean_type,
+            'law_advice' => $request->law_advice,
             'comment' => $request->comment,
             'isComplement' => $request->isComplement,
         ]);
         $series_code = 0;
         $len = 5;
-        $series_number = date('Y') . date('m') . $request->category . sprintf("%0{$len}d", $series_code);
+        $series_number = date('Y'). $request->department_source . sprintf("%0{$len}d", $series_code);
         while(Contract::where('series_number', '=', $series_number)->exists()) {
             $series_code++;
-            $series_number = date('Y') . date('m') . $request->category . sprintf("%0{$len}d", $series_code);
+            $series_number = date('Y') . date('m') . $request->department_source . sprintf("%0{$len}d", $series_code);
         }
         $contract->series_number = $series_number;
         $contract->save();
