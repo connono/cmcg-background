@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Http\Requests\Api\UserRequest;
+use App\Models\Notification;
 
 class UsersController extends Controller
 {
@@ -31,7 +32,7 @@ class UsersController extends Controller
         } else {
             $user->assignRole('用户');
         }
-
+        
         return new UserResource($user);
     }
 

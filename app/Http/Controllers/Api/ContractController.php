@@ -90,6 +90,8 @@ class ContractController extends Controller
             $series_code++;
             if ($series_number >= 100) {
                 $series_number = $request->department_source . date('Y'). $series_code;
+            } else {
+                $series_number = $request->department_source . date('Y'). '0' . $series_code;
             }
         }
         $contract->series_number = $series_number;
