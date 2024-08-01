@@ -58,4 +58,9 @@ class Contract extends Model
     {
         return $this->hasMany(PaymentProcess::class);
     }
+
+    public function notification(): HasOne
+    {
+        return $this->hasOne(\App\Models\Notification::class);
+    }
 }

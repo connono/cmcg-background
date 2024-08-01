@@ -23,7 +23,6 @@ class ContractController extends Controller
         $query = $contract->query();
         if(is_null($department->acronym)) 
             return response()->json([])->setStatusCode(200);
-        // return $department->acronym;
         if($department->acronym != 'ALL'){
             $query = $query->where('department_source', $department->acronym);
         }
@@ -96,6 +95,16 @@ class ContractController extends Controller
         }
         $contract->series_number = $series_number;
         $contract->save();
+        $notification = Notification::create([
+            'permission' => 'can_approve_contracts',
+            'title' => $contract->contract_name,
+            'body' => json_encode($contract),
+            'category' => 'purchaseMonitor',
+            'n_category' => 'contract',
+            'type' => 'approve',
+            'link' => '/purchase/contract/detail#' . $contract->id,
+        ]);
+        $contract->notification()->save($notification);
         if ($request->equipment_apply_record_id) {
             $equipment_apply_record = EquipmentApplyRecord::find($request->equipment_apply_record_id);
             $equipment_apply_record->contract()->save($contract);
@@ -117,6 +126,7 @@ class ContractController extends Controller
                 'type' => 'install',
                 'link' => '/apply/equipment/detail#update&' . $equipment_apply_record->id,
                 'user_id' => $user->id,
+                'department_id' => $department->id, 
             ]);
             $equipment_apply_record->notification()->delete();
             $equipment_apply_record->notification()->save($notification);
@@ -142,33 +152,25 @@ class ContractController extends Controller
         switch($request->method){
             case 'approve':
                 $attributes = ['status' => 'upload'];
-                // $notification = Notification::create([
-                //     'permission' => 'can_contract_instrument',
-                //     'title' => $record->instrument,
-                //     'body' => json_encode($record, true),
-                //     'category' => 'apply',
-                //     'n_category' => 'instrumentApplyRecord',
-                //     'type' => 'contract',
-                //     'link' => '/apply/instrument/detail#update&' . $record->id,
-                // ]);
-                // $record->notification()->delete();
-                // $record->notification()->save($notification);
+                $old_notification = $contract->notification()->first();
+                $notification = Notification::create([
+                    'permission' => 'can_create_contract_process',
+                    'title' => $contract->contract_name,
+                    'body' => json_encode($contract),
+                    'category' => 'purchaseMonitor',
+                    'n_category' => 'contract',
+                    'type' => 'upload',
+                    'link' => '/purchase/contract/detail#' . $contract->id,
+                    'department_id' => $old_notification->department_id,
+                ]);
+                $contract->notification()->delete();
+                $contract->notification()->save($notification);
                 $contract->update($attributes);
                 break;
             case 'upload':
                 $attributes = $request->only(['contract_file']);
                 $attributes['status'] = 'finish';
-                // $notification = Notification::create([
-                //     'permission' => 'can_install_instrument',
-                //     'title' => $record->instrument,
-                //     'body' => json_encode($record, true),
-                //     'category' => 'apply',
-                //     'n_category' => 'instrumentApplyRecord',
-                //     'type' => 'install',
-                //     'link' => '/apply/instrument/detail#update&' . $record->id,
-                // ]);
-                // $record->notification()->delete();
-                // $record->notification()->save($notification);
+                $contract->notification()->delete();
                 $contract->update($attributes);
                 break;
         }

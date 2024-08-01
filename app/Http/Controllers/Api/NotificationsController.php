@@ -95,6 +95,14 @@ class NotificationsController extends Controller
             $notifications_process = Notification::where('permission', 'can_engineer_approve_repair')->get();
             $notifications = $notifications->merge($notifications_process);
         }
+        if ($user->can('can_approve_contracts')) {
+            $notifications_process = Notification::where('permission', 'can_approve_contracts')->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_create_contract_process')) {
+            $notifications_process = Notification::where('permission', 'can_create_contract_process')->where('department_id', $user->department_id)->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
         return  NotificationResource::collection($notifications);
     }
 
