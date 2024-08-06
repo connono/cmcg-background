@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Models\ConsunmableTemporaryApply;
+use App\Models\ConsumableTemporaryApply;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ConsumableTemporaryApplyRecordResource extends JsonResource
@@ -15,7 +15,7 @@ class ConsumableTemporaryApplyRecordResource extends JsonResource
      */
     public function toArray($request)
     {
-        $consunmableTemporary_apply_record = ConsunmableTemporaryApply::find($this->id);
+        $consumableTemporary_apply_record = ConsumableTemporaryApply::find($this->id);
        // $contract = $equipment_apply_record ? $equipment_apply_record->contract()->first() : null;
        // $contract_id = $contract ? $contract->id : null;
 

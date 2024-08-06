@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('platform_id')->nullable()->comment('平台ID');
             $table->string('department')->comment('申请科室');
             $table->string('consumable')->comment('耗材名称');
-            $table->string('consumable')->nullable()->comment('申耗材名称 ');
             $table->string('model')->nullable()->comment('型号');
             $table->bigInteger('price')->nullable()->comment('采购单价');
             $table->date('start_date')->nullable()->comment('合同日期');

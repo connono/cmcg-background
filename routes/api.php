@@ -222,7 +222,7 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
     Route::get('comsumable/apply/getItem',[ComsumableItemApplyRecordController::class,'getItem'])
         ->name('comsumable.apply.getItem');
     Route::post('comsumable/apply/store',[ComsumableItemApplyRecordController::class, 'store'])
-        ->name('comsumable.apply.store');*/
+        ->name('comsumable.apply.store');
     Route::get('payment/document/records/index', [PaymentDocumentController::class, 'index'])
         ->name('payment.document.records.index');
     Route::get('payment/document/records/item/{record}', [PaymentDocumentController::class, 'item'])

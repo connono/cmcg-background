@@ -5,11 +5,11 @@ use App\Http\Resources\ConsumableTemporaryApplyRecordResource;
 use App\Models\Department;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\ConsunmableTemporaryApply;
+use App\Models\ConsumableTemporaryApply;
 class ConsumableTemporaryApplyController extends Controller
 {
     //
-    public function getSerialNumber(Request $request, ConsunmableTemporaryApply $record){
+    public function getSerialNumber(Request $request, ConsumableTemporaryApply $record){
         $query = $record->query();
         $count = $query->count();
         if($count!==0){
@@ -23,12 +23,12 @@ class ConsumableTemporaryApplyController extends Controller
         } else {
             $serial_number = date("Y")*10000+1;
         }
-        while(\Cache::has('consunmabletemporary_serial_number_'.$serial_number)){
+        while(\Cache::has('consumabletemporary_serial_number_'.$serial_number)){
             $serial_number++;
         }
-        $cacheKey = 'consunmabletemporary_serial_number_'.$serial_number;
+        $cacheKey = 'consumabletemporary_serial_number_'.$serial_number;
         $expiredAt = now()->addMinutes(60);
-        \Cache::put($cacheKey, ['consunmabletemporary_serial_number_'=>(string)$serial_number], $expiredAt);
+        \Cache::put($cacheKey, ['consumabletemporary_serial_number_'=>(string)$serial_number], $expiredAt);
         return response()->json([
             'serial_number' => (string)$serial_number,
             'expired_at' => $expiredAt->toDateTimeString(),
@@ -38,13 +38,13 @@ class ConsumableTemporaryApplyController extends Controller
 
 
     public function store(Request $request){
-        if(!\Cache::has('consunmabletemporary_serial_number_'.$request->serial_number)){
+        if(!\Cache::has('consumabletemporary_serial_number_'.$request->serial_number)){
             return response()->json([
                 'error' => 'false'
             ])->setStatusCode(500);
         }
 
-        $record = ConsunmableTemporaryApply::create([
+        $record = ConsumableTemporaryApply::create([
             'department' => $request->department,
             'consumable' => $request->consumable,
             'count' => $request->count,
@@ -75,12 +75,12 @@ class ConsumableTemporaryApplyController extends Controller
         $record->notification()->delete();
         $record->notification()->save($notification);
 */
-        \Cache::forget('consunmabletemporary_serial_number_'.$request->serial_number);
+        \Cache::forget('consumabletemporary_serial_number_'.$request->serial_number);
 
         return new ConsumableTemporaryApplyRecordResource($record);
     }
 
-    public function index(Request $request, ConsunmableTemporaryApply $record){
+    public function index(Request $request, ConsumableTemporaryApply $record){
         $query = $record->query();
        
         if (!is_null($request->department)) {
@@ -113,7 +113,7 @@ class ConsumableTemporaryApplyController extends Controller
         return  ConsumableTemporaryApplyRecordResource::collection($records);
     }
 
-    public function update(Request $request, ConsunmableTemporaryApply $record){
+    public function update(Request $request, ConsumableTemporaryApply $record){
         $method = $request->method;
         if($method === 'buy'){
             $attributes = $request->only(['product_id','arrive_date', 'arrive_price','company','telephone2','accept_file']);
@@ -127,7 +127,7 @@ class ConsumableTemporaryApplyController extends Controller
 
     }
 
-    public function stop(Request $request, ConsunmableTemporaryApply $record){
+    public function stop(Request $request, ConsumableTemporaryApply $record){
         
             $attributes = $request->only(['stop_reason']);
                 $attributes['status'] = '4';
@@ -136,7 +136,7 @@ class ConsumableTemporaryApplyController extends Controller
 
     }
 
-    public function layout(Request $request, ConsunmableTemporaryApply $record){
+    public function layout(Request $request, ConsumableTemporaryApply $record){
         $query = $record->query();
         return new ConsumableTemporaryApplyRecordResource($record); 
     }

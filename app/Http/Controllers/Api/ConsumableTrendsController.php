@@ -141,7 +141,7 @@ class ConsumableTrendsController extends Controller
         return  $records;
     }
 
-    /*public function stop(Request $request, ConsunmableTemporaryApply $record){
+    /*public function stop(Request $request, ConsumableTemporaryApply $record){
         
             $attributes = $request->only(['stop_reason']);
                 $attributes['status'] = '4';
@@ -150,7 +150,7 @@ class ConsumableTrendsController extends Controller
 
     }
 
-    public function layout(Request $request, ConsunmableTemporaryApply $record){
+    public function layout(Request $request, ConsumableTemporaryApply $record){
         $query = $record->query();
         return new ConsumableTemporaryApplyRecordResource($record); 
     }*/

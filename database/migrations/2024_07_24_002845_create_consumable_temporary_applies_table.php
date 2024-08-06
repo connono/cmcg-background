@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('consunmable_temporary_applies', function (Blueprint $table) {
+        Schema::create('consumable_temporary_applies', function (Blueprint $table) {
             $table->id()->index();
             $table->string('serial_number')->comment('申请单号');
             //申请0-待采购1-待审核2-完成3-终止4
@@ -50,6 +50,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('consunmable_temporary_applies');
+        Schema::dropIfExists('consumable_temporary_applies');
     }
 };

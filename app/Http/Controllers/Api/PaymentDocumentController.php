@@ -13,6 +13,7 @@ use App\Models\PaymentProcess;
 use App\Models\Contract;
 use App\Models\EquipmentApplyRecord;
 use App\Models\InstrumentApplyRecord;
+use App\Models\Notification;
 use App\Models\User;
 use App\Models\Leader;
 
@@ -112,7 +113,7 @@ class PaymentDocumentController extends Controller
             $user_2_signature = User::where('name', $leader_2->name)->first()->signature_picture;
             $signatures = [$user_1_signature, $user_2_signature];
         }
-        $today = $date('Y年m月d日');
+        $today = date('Y年m月d日');
         $notification = Notification::create([
             'user_id' => $record->user_id_3,
             'title' => $today . "制单",
@@ -121,7 +122,7 @@ class PaymentDocumentController extends Controller
             'n_category' => 'paymentProcess',
             'type' => 'finance_audit',
             'link' => '/purchase/paymentProcess',
-        ])
+        ]);
         return response()->json([
             'data' => $data,
             'signature' => $signatures,
