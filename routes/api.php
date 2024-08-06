@@ -21,6 +21,10 @@ use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\AdvanceRecordController;
 use App\Http\Controllers\Api\ComsumableItemApplyRecordController;
 
+use App\Http\Controllers\Api\ConsumableTemporaryApplyController;
+use App\Http\Controllers\Api\ConsumableApplyController;
+use App\Http\Controllers\Api\ConsumableDirectoryController;
+use App\Http\Controllers\Api\ConsumableTrendsController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -209,12 +213,12 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('payment.contracts.plans.delete');
     Route::delete('payment/contracts/processes/delete/{contract}',[ContractController::class, 'deleteProcess'])
         ->name('payment.contracts.processes.delete');
-    Route::get('comsumable/apply/index',[ComsumableItemApplyRecordController::class, 'index'])
+   /* Route::get('comsumable/apply/index',[ComsumableItemApplyRecordController::class, 'index'])
         ->name('comsumable.apply.index');
     Route::get('comsumable/apply/getItem',[ComsumableItemApplyRecordController::class,'getItem'])
         ->name('comsumable.apply.getItem');
     Route::post('comsumable/apply/store',[ComsumableItemApplyRecordController::class, 'store'])
-        ->name('comsumable.apply.store');
+        ->name('comsumable.apply.store');*/
     Route::get('payment/document/records/index', [PaymentDocumentController::class, 'index'])
         ->name('payment.document.records.index');
     Route::get('payment/document/records/item/{record}', [PaymentDocumentController::class, 'item'])
@@ -229,6 +233,45 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('payment.document.records.delete');
     Route::post('payment/document/records/update/{record}',[PaymentDocumentController::class, 'update'])
         ->name('payment.document.records.update');
+
+    Route::get('consumabletemp/serialNumber',[ConsumableTemporaryApplyController::class, 'getSerialNumber'])
+        ->name('consumabletemp.serialNumber');
+    Route::post('consumabletemp/store',[ConsumableTemporaryApplyController::class, 'store'])
+        ->name('consumabletemp.store');
+    Route::get('consumabletemp/index',[ConsumableTemporaryApplyController::class, 'index'])
+        ->name('consumabletemp.index');
+    Route::post('consumabletemp/update/{record}',[ConsumableTemporaryApplyController::class, 'update'])
+        ->name('consumabletemp.update');
+    Route::post('consumabletemp/stop/{record}',[ConsumableTemporaryApplyController::class, 'stop'])
+        ->name('consumabletemp.stop');
+    Route::get('consumabletemp/layout/{record}',[ConsumableTemporaryApplyController::class, 'layout'])
+        ->name('consumabletemp.layout');
+        //耗材动态目录管理
+    Route::get('consumable/serialNumber',[ConsumableApplyController::class, 'getSerialNumber'])
+        ->name('consumable.serialNumber');
+    Route::post('consumable/apply/store',[ConsumableApplyController::class, 'store'])
+        ->name('consumable.apply.store');
+    Route::get('consumable/apply/index',[ConsumableApplyController::class, 'index'])
+        ->name('consumable.apply.index');   
+    Route::post('consumable/apply/update/{record}',[ConsumableApplyController::class, 'update'])
+        ->name('consumable.apply.update');
+    Route::get('comsumable/apply/getItem',[ConsumableApplyController::class,'getItem'])
+        ->name('comsumable.apply.getItem');
+    Route::post('consumable/trends/store',[ConsumableTrendsController::class, 'store'])
+        ->name('consumable.trends.store');
+    Route::get('comsumable/trends/getItem',[ConsumableTrendsController::class,'getItem'])
+        ->name('comsumable.trends.getItem');  
+    Route::get('comsumable/trends/index',[ConsumableTrendsController::class,'index'])
+        ->name('comsumable.trends.index');  
+    Route::post('consumable/directory/store',[ConsumableDirectoryController::class, 'store'])
+        ->name('consumable.directory.store');
+    Route::post('consumable/directory/update/{record}',[ConsumableDirectoryController::class, 'update'])
+        ->name('consumable.directory.update');
+    Route::get('consumable/directory/index',[ConsumableDirectoryController::class, 'index'])
+        ->name('consumable.directory.index');  
+    Route::get('consumable/directory/getItem',[ConsumableDirectoryController::class, 'getItem'])
+        ->name('consumable.directory.getItem');  
+
     Route::middleware('auth:api')->group(function() {
         // 当前登录用户信息
         Route::get('user', [UsersController::class, 'me'])

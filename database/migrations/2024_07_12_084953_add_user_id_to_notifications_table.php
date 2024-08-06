@@ -17,9 +17,6 @@ return new class extends Migration
             if(!Schema::hasColumn('notifications', 'user_id')) {
                 $table->string('user_id')->nullable()->comment('通知用户');
             }
-            if(!Schema::hasColumn('notifications', 'payment_document_id')) {
-                $table->string('payment_document_id')->nullable()->comment('制单外键');
-            }
         });
     }
 
@@ -33,9 +30,6 @@ return new class extends Migration
         Schema::table('notifications', function (Blueprint $table) {
             if(Schema::hasColumn('notifications', 'user_id')) {
                 $table->dropColumn(['user_id']);
-            }
-            if(Schema::hasColumn('notifications', 'payment_document_id')) {
-                $table->dropColumn(['payment_document_id']);
             }
         });
     }
