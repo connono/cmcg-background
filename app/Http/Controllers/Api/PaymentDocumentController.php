@@ -88,7 +88,7 @@ class PaymentDocumentController extends Controller
                 $payment_process = PaymentProcess::find($payment_process_record->payment_process_id);
                 $last_payment_process_record = PaymentProcessRecord::where('payment_process_id', $payment_process->id)->whereNotNull('payment_date')->first();                
                 $contract = Contract::find($payment_process->contract_id);
-                if ($contract->equipment_apply_record_id) {
+                if (!is_null($contract->equipment_apply_record_id)) {
                     $equipment_apply_record = EquipmentApplyRecord::find($contract->equipment_apply_record_id);
                 }
 

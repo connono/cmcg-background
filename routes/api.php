@@ -177,6 +177,8 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('payment.process.records.back');
     Route::get('notifications/index/{user}',[NotificationsController::class, 'index'])
         ->name('notifications.index');
+    Route::delete('notifications/delete',[NotificationsController::class, 'delete'])
+        ->name('notifications.delete');
     Route::get('department/index',[DepartmentController::class, 'index'])
         ->name('department.index');
     Route::get('department/engineer/index',[DepartmentController::class, 'engineerIndex'])

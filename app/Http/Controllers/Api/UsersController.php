@@ -32,7 +32,7 @@ class UsersController extends Controller
         } else {
             $user->assignRole('用户');
         }
-        
+
         return new UserResource($user);
     }
 
@@ -48,8 +48,12 @@ class UsersController extends Controller
 
     public function update(UserRequest $request, User $user)
     {
-        $attributes = $request->only(['phone_number','department']);
-        $user->update($attributes);
+        $department = Department::where('name', $request->department)->first();
+        $user->update([
+            'phone_number' => $request->phone_number,
+            'department' => $department->label,
+            'department_id' => $department->id,
+        ]);
         $user->syncRoles($request->roles);
         return new UserResource($user);
     }

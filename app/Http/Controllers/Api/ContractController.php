@@ -87,7 +87,7 @@ class ContractController extends Controller
         $series_number = $request->department_source . date('Y'). '0' . $series_code;
         while(Contract::where('series_number', '=', $series_number)->exists()) {
             $series_code++;
-            if ($series_number >= 100) {
+            if ($series_code >= 100) {
                 $series_number = $request->department_source . date('Y'). $series_code;
             } else {
                 $series_number = $request->department_source . date('Y'). '0' . $series_code;
@@ -95,6 +95,7 @@ class ContractController extends Controller
         }
         $contract->series_number = $series_number;
         $contract->save();
+        $department = Department::where('acronym', $request->department_source)->first();
         $notification = Notification::create([
             'permission' => 'can_approve_contracts',
             'title' => $contract->contract_name,
@@ -103,6 +104,7 @@ class ContractController extends Controller
             'n_category' => 'contract',
             'type' => 'approve',
             'link' => '/purchase/contract/detail#' . $contract->id,
+            'department_id' => $department->id,
         ]);
         $contract->notification()->save($notification);
         if ($request->equipment_apply_record_id) {
@@ -204,6 +206,20 @@ class ContractController extends Controller
     }
     
     public function delete(Request $request, Contract $contract) {
+        $old_notification = $contract->notification()->first();
+        $notification = Notification::create([
+            'permission' => 'can_create_contract_process',
+            'title' => $contract->contract_name,
+            'body' => json_encode($contract),
+            'category' => 'purchaseMonitor',
+            'n_category' => 'contract',
+            'type' => 'delete',
+            'link' => '/purchase/contract#create',
+            'department_id' => $old_notification->department_id,
+        ]);
+        $notification->link = '/purchase/contract#create&' . $notification->id;
+        $notification->save();
+        $contract->notification()->delete();
         $contract->delete();
         return response()->json([])->setStatusCode(200);
     }

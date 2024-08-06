@@ -59,13 +59,17 @@ class PaymentProcessesController extends Controller
                 'contract_name' => $contract_name,
             ]);
             $contract->processes()->save($process);
-            $record = EquipmentApplyRecord::find($contract->equipment_apply_record_id);
-            $record->notification()->delete();
-            $recordJSON = json_encode($record, true);
-            $record_array = json_decode($recordJSON, true);
             $processJSON = json_encode($process, true);
             $process_array = json_decode($processJSON, true);
-            $information = (object) array_merge($record_array, $process_array);
+            if(!is_null($contract->equipment_apply_record_id)) {
+                $record = EquipmentApplyRecord::find($contract->equipment_apply_record_id);
+                $record->notification()->delete(); 
+                $recordJSON = json_encode($record, true);
+                $record_array = json_decode($recordJSON, true);
+                $information = (object) array_merge($record_array, $process_array);   
+            } else {
+                $information = (object) $process_array;
+            }
             $notification = Notification::create([
                 'permission' => $process->department,
                 'title' => $process->contract_name,

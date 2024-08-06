@@ -47,6 +47,10 @@ class NotificationsController extends Controller
             $notifications_process = Notification::where('permission', 'can_tender_equipment')->get();
             $notifications = $notifications->merge($notifications_process);
         }
+        if ($user->can('can_install_equipment' && $user->department == '医学工程科')) {
+            $notifications_process = Notification::where('permission', 'can_install_equipment')->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
         if ($user->can('can_contract_equipment')) {
             $notifications_process = Notification::where('permission', 'can_contract_equipment')->get();
             $notifications = $notifications->merge($notifications_process);
@@ -107,7 +111,8 @@ class NotificationsController extends Controller
     }
 
     public function delete(Request $request, Notification $notificaiton) {
+        $notificaiton = Notification::find($request->id);
         $notificaiton->delete();
-        return response()->json([])->setStatusCode(201);
+        return response()->json([])->setStatusCode(200);
     }
 }
