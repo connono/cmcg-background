@@ -17,7 +17,7 @@ class ConsumableTrendsResource extends JsonResource
         return [
             "id"=> $this->id,
             "consumable_apply_id" => $this->consumable_apply_id,
-            "platform"=> $this->platform,
+            "platform_id"=> $this->platform_id,
             "department"=> $this->department,
             "consumable"=> $this->consumable,
             "model"=> $this->model,

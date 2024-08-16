@@ -208,7 +208,7 @@ class ContractController extends Controller
     public function delete(Request $request, Contract $contract) {
         $old_notification = $contract->notification()->first();
         $notification = Notification::create([
-            'permission' => 'can_create_contract_process',
+            'permission' => 'can_create_payment_process',
             'title' => $contract->contract_name,
             'body' => json_encode($contract),
             'category' => 'purchaseMonitor',

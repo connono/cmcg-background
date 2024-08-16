@@ -13,59 +13,36 @@ use App\Models\ConsumableTrendsTable;
 class ConsumableDirectoryController extends Controller
 {
     public function store(Request $request){
-        /* if(!\Cache::has('consumable_serial_number_'.$request->serial_number)){
-             return response()->json([
-                 'error' => 'false'
-             ])->setStatusCode(500);
-         }
- */          
- 
-         $record = ConsumableDirectoryTable::create([
-             "consumable_apply_id" => $request->consumable_apply_id,
-             "platform_id" => $request->platform_id,
-             "department" => $request->department,
-             "consumable" => $request->consumable,
-             "model" => $request->model,
-             "price" => $request->price,
-             "start_date" => $request->start_date,
-             "exp_date" => $request->exp_date,
-             "registration_num" => $request->registration_num,
-             "company"=> $request->company,
-             "manufacturer" => $request->manufacturer,
-             "category_zj" => $request->category_zj,
-             "parent_directory" => $request->parent_directory,
-             "child_directory" => $request->child_directory,
-             "apply_type" => $request->apply_type,
-             "in_drugstore" => $request->in_drugstore,
-             "status" => '0',
-             
-         ]);
+
          if($request->vertify == '0'){  //审核通不过
             ConsumableApplyTable::query()->where('serial_number', $request->consumable_apply_id)
          ->update(['status' => '0']);
+           return response()->json(['data' => ''])->setStatusCode(200);
         }elseif($request->vertify == '1'){ //审核通过
             ConsumableApplyTable::query()->where('serial_number', $request->consumable_apply_id)
             ->update(['status' => '3']);
-             $record->save();
+            
+            $record = ConsumableDirectoryTable::create([
+                "consumable_apply_id" => $request->consumable_apply_id,
+                "platform_id" => $request->platform_id,
+                "department" => $request->department,
+                "consumable" => $request->consumable,
+                "model" => $request->model,
+                "price" => $request->price,
+                "start_date" => $request->start_date,
+                "exp_date" => $request->exp_date,
+                "registration_num" => $request->registration_num,
+                "company"=> $request->company,
+                "manufacturer" => $request->manufacturer,
+                "category_zj" => $request->category_zj,
+                "parent_directory" => $request->parent_directory,
+                "child_directory" => $request->child_directory,
+                "apply_type" => $request->apply_type,
+                "in_drugstore" => $request->in_drugstore,
+                "status" => '0',
+            ]);
+            return new ConsumableDirectoryResource($record);
         }
-        
-        
- /*
-         $notification = Notification::create([
-             'permission' => 'can_survey_equipment',
-             'title' => $record->equipment,
-             'body' => json_encode($record),
-             'category' => 'apply',
-             'n_category' => 'equipmentApplyRecord',
-             'type' => 'survey', 
-             'link' => '/apply/equipment/detail#update&' . $record->id,
-         ]);
-         $record->notification()->delete();
-         $record->notification()->save($notification);
- 
-         \Cache::forget('consumable_serial_number_'.$request->serial_number);
- 
-         return new ConsumableApplyResource($record);*/
      }
 
 

@@ -238,35 +238,41 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
     Route::post('payment/document/records/update/{record}',[PaymentDocumentController::class, 'update'])
         ->name('payment.document.records.update');
 
-    Route::get('consumabletemp/serialNumber',[ConsumableTemporaryApplyController::class, 'getSerialNumber'])
-        ->name('consumabletemp.serialNumber');
-    Route::post('consumabletemp/store',[ConsumableTemporaryApplyController::class, 'store'])
-        ->name('consumabletemp.store');
-    Route::get('consumabletemp/index',[ConsumableTemporaryApplyController::class, 'index'])
-        ->name('consumabletemp.index');
-    Route::post('consumabletemp/update/{record}',[ConsumableTemporaryApplyController::class, 'update'])
-        ->name('consumabletemp.update');
-    Route::post('consumabletemp/stop/{record}',[ConsumableTemporaryApplyController::class, 'stop'])
-        ->name('consumabletemp.stop');
+    Route::get('consumable/tempory/serialNumber',[ConsumableTemporaryApplyController::class, 'getSerialNumber'])
+        ->name('consumable.tempory.serialNumber');
+    Route::post('consumable/tempory/store',[ConsumableTemporaryApplyController::class, 'store'])
+        ->name('consumable.tempory.store');
+    Route::get('consumable/tempory/index',[ConsumableTemporaryApplyController::class, 'index'])
+        ->name('consumable.tempory.index');
+    Route::get('comsumable/tempory/getItem',[ConsumableTemporaryApplyController::class,'getItem'])
+        ->name('comsumable.tempory.getItem');
+    Route::post('consumable/tempory/update/{record}',[ConsumableTemporaryApplyController::class, 'update'])
+        ->name('consumable.tempory.update');
+    Route::post('consumable/tempory/back/{record}',[ConsumableTemporaryApplyController::class, 'back'])
+        ->name('consumable.tempory.back');
+    Route::post('consumable/tempory/stop/{record}',[ConsumableTemporaryApplyController::class, 'stop'])
+        ->name('consumable.tempory.stop');
     Route::get('consumabletemp/layout/{record}',[ConsumableTemporaryApplyController::class, 'layout'])
         ->name('consumabletemp.layout');
         //耗材动态目录管理
-    Route::get('consumable/serialNumber',[ConsumableApplyController::class, 'getSerialNumber'])
-        ->name('consumable.serialNumber');
+    Route::get('consumable/apply/serialNumber',[ConsumableApplyController::class, 'getSerialNumber'])
+        ->name('consumable.apply.serialNumber');
     Route::post('consumable/apply/store',[ConsumableApplyController::class, 'store'])
         ->name('consumable.apply.store');
     Route::get('consumable/apply/index',[ConsumableApplyController::class, 'index'])
         ->name('consumable.apply.index');   
     Route::post('consumable/apply/update/{record}',[ConsumableApplyController::class, 'update'])
         ->name('consumable.apply.update');
-    Route::get('comsumable/apply/getItem',[ConsumableApplyController::class,'getItem'])
-        ->name('comsumable.apply.getItem');
+    Route::get('consumable/apply/getItem',[ConsumableApplyController::class,'getItem'])
+        ->name('consumable.apply.getItem');
     Route::post('consumable/trends/store',[ConsumableTrendsController::class, 'store'])
         ->name('consumable.trends.store');
-    Route::get('comsumable/trends/getItem',[ConsumableTrendsController::class,'getItem'])
-        ->name('comsumable.trends.getItem');  
-    Route::get('comsumable/trends/index',[ConsumableTrendsController::class,'index'])
-        ->name('comsumable.trends.index');  
+    Route::get('consumable/trends/getFirstItem',[ConsumableTrendsController::class,'getFirstItem'])
+        ->name('consumable.trends.getFirstItem'); 
+    Route::get('consumable/trends/getLastItem',[ConsumableTrendsController::class,'getLastItem'])
+        ->name('consumable.trends.getLastItem');   
+    Route::get('consumable/trends/index',[ConsumableTrendsController::class,'index'])
+        ->name('consumable.trends.index');  
     Route::post('consumable/directory/store',[ConsumableDirectoryController::class, 'store'])
         ->name('consumable.directory.store');
     Route::post('consumable/directory/update/{record}',[ConsumableDirectoryController::class, 'update'])

@@ -55,6 +55,7 @@ class ConsumableTrendsController extends Controller
             "model" => $request->model,
             "price" => $request->price,
             "start_date" => $request->start_date,
+            "exp_date" => $request->exp_date,
             "registration_num" => $request->registration_num,
             "company"=> $request->company,
             "manufacturer" => $request->manufacturer,
@@ -73,7 +74,6 @@ class ConsumableTrendsController extends Controller
             ConsumableDirectoryTable::query()->where('consumable_apply_id', $request->consumable_apply_id)
               ->update(['status' => '2']);
         }
-        $record->save();
 /*
         $notification = Notification::create([
             'permission' => 'can_survey_equipment',
@@ -132,8 +132,12 @@ class ConsumableTrendsController extends Controller
                 $record->update($attributes);
           
     }
-    public function getItem(Request $request, ConsumableTrendsTable $record) {
+    public function getLastItem(Request $request, ConsumableTrendsTable $record) {
         $record = ConsumableTrendsTable::where('consumable_apply_id', $request->serial_number)->orderBy('id', 'DESC')->first();
+        return new ConsumableTrendsResource($record);
+    }
+    public function getFirstItem(Request $request, ConsumableTrendsTable $record) {
+        $record = ConsumableTrendsTable::where('consumable_apply_id', $request->serial_number)->orderBy('id', 'ASC')->first();
         return new ConsumableTrendsResource($record);
     }
     public function index(Request $request, ConsumableTrendsTable $record){

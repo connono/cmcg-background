@@ -74,7 +74,7 @@ class ConsumableApplyController extends Controller
             if($request->in_drugstore == '0'){
                 $record->status = '2';
             }else{
-                if($request->apply_type == '0'){
+                if($request->apply_type == '0' || $request->apply_type == '4'){
                     $record->status = '2'; 
                 }else{
                     $record->status = '0';
@@ -134,14 +134,24 @@ class ConsumableApplyController extends Controller
     }
 
     public function update(Request $request, ConsumableApplyTable $record){
+        if($request->method === 'approve') {
             if($request->approve == '0'){  //审批通不过
                 $attributes['status'] = '0';
             }elseif($request->approve == '1'){ //审核通过
                 $attributes['status'] = '2';
-            }
-           
-                $record->update($attributes);
-          
+            }    
+        } else if ($request->method === 'engineer_approve') {
+            if($request->approve == '0'){  //审批通不过
+                $attributes['status'] = '0';
+            }elseif($request->approve == '1'){ //审核通过
+                $attributes['status'] = '3';
+            }    
+        }
+
+        
+        
+        $record->update($attributes);
+        return new ConsumableApplyResource($record);
     }
     public function getItem(Request $request, ConsumableApplyTable $record) {
         $record = ConsumableApplyTable::where('serial_number', $request->serial_number)->orderBy('id', 'DESC')->first();

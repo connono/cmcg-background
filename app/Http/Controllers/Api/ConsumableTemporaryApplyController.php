@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use App\Models\ConsumableTemporaryApply;
 class ConsumableTemporaryApplyController extends Controller
 {
-    //
     public function getSerialNumber(Request $request, ConsumableTemporaryApply $record){
         $query = $record->query();
         $count = $query->count();
@@ -34,6 +33,11 @@ class ConsumableTemporaryApplyController extends Controller
             'expired_at' => $expiredAt->toDateTimeString(),
             'record_serial_number' => $record->serial_number,
         ])->setStatusCode(201);
+    }
+
+    public function getItem(Request $request, ConsumableTemporaryApply $record){
+        $record = ConsumableTemporaryApply::find($request->id);
+        return new ConsumableTemporaryApplyRecordResource($record);
     }
 
 
@@ -123,8 +127,20 @@ class ConsumableTemporaryApplyController extends Controller
             $attributes['status'] = '3';
             $record->update($attributes);
         }
+        return new ConsumableTemporaryApplyRecordResource($record);
+    }
 
-
+    public function back(Request $request, ConsumableTemporaryApply $record) {
+        $record->update([
+            'status' => '2',
+            'product_id' => null,
+            'arrive_date' => null,
+            'arrive_price' => null,
+            'company' => null,
+            'telephone2' => null,
+            'accept_file' => null,
+        ]);
+        return new ConsumableTemporaryApplyRecordResource($record);
     }
 
     public function stop(Request $request, ConsumableTemporaryApply $record){
