@@ -48,7 +48,7 @@ class UsersController extends Controller
 
     public function update(UserRequest $request, User $user)
     {
-        $department = Department::where('name', $request->department)->first();
+        $department = Department::where('label', $request->department)->first();
         $user->update([
             'phone_number' => $request->phone_number,
             'department' => $department->label,

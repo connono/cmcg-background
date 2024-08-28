@@ -32,7 +32,6 @@ class PaymentPlansController extends Controller
     }
 
     public function getItem(Request $request, PaymentPlan $plan){
-        $plan = PaymentPlan::find($request->id);
         return new PaymentPlanResource($plan);
     }
 
@@ -46,6 +45,7 @@ class PaymentPlansController extends Controller
             'finish_date' => $request->finish_date,
             'contract_date' => $request->contract_date,
             'payment_file' => $request->payment_file,
+            'status' => 'wait',
         ]);
         $plan->records_count = 0;
         $plan->assessments_count = 0;

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Department;
+use App\Models\Leader;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\PaymentRecord;
 use App\Models\PaymentPlan;
@@ -48,13 +51,36 @@ class PaymentRecordsController extends Controller
             case 'apply':
                 $attributes = $request->only(['assessment', 'payment_voucher_file']);
                 $plan->update([
-                    'status' => 'audit',
+                    'status' => 'dean_audit',
                     'assessment' => $request->assessment,
                 ]);
+                $record->update($attributes);
+                $department1 = Department::where('label', $plan->department)->first();
+                $leader = Leader::find($department1->leader_id);
+                $user = User::where('name', $leader->name)->first();
                 $notification = Notification::create([
-                    'permission' => 'can_audit_payment_record',
                     'title' => $plan->contract_name,
                     'body' => json_encode($plan),
+                    'user_id' => $user->id,
+                    'category' => 'purchaseMonitor',
+                    'n_category' => 'paymentPlan',
+                    'type' => 'dean_audit',
+                    'link' => '/purchase/paymentMonitor/detail#dean_audit&' . $plan->id . '&' . $plan->current_payment_record_id,
+                ]);
+                $plan->notification()->delete();
+                $plan->notification()->save($notification);    
+                break;
+            case 'dean_audit':
+                $plan->update([
+                    'status' => 'audit',
+                ]);
+                $department1 = Department::where('label', $plan->department)->first();
+                $leader = Leader::find($department1->leader_id);
+                $user = User::where('name', $leader->name)->first();
+                $notification = Notification::create([
+                    'title' => $plan->contract_name,
+                    'body' => json_encode($plan),
+                    'permission' => 'can_audit_payment_record',
                     'category' => 'purchaseMonitor',
                     'n_category' => 'paymentPlan',
                     'type' => 'audit',
@@ -64,7 +90,41 @@ class PaymentRecordsController extends Controller
                 $plan->notification()->save($notification);
                 break;
             case 'audit':
-                $attributes = [];
+                $department1 = Department::where('label', $plan->department)->first();
+                $department2 = Department::where('label', '财务科')->first();
+                if ($department1->leader_id === $department2->leader_id) {
+                    return 1;
+                    $plan->update(['status' => 'process']);
+                    $notification = Notification::create([
+                        'permission' => 'can_process_payment_record',
+                        'title' => $plan->contract_name,
+                        'body' => json_encode($plan),
+                        'category' => 'purchaseMonitor',
+                        'n_category' => 'paymentPlan',
+                        'type' => 'process',
+                        'link' => '/purchase/paymentMonitor/detail#process&' . $plan->id . '&' . $plan->current_payment_record_id,
+                    ]);
+                    $plan->notification()->delete();
+                    $plan->notification()->save($notification);
+                } else {
+                    
+                    $leader = Leader::find($department2->leader_id);
+                    $user = User::where('name', $leader->name)->first();
+                    $plan->update(['status' => 'finance_dean_audit']);
+                    $notification = Notification::create([
+                        'user_id' => $user->id,
+                        'title' => $plan->contract_name,
+                        'body' => json_encode($plan),
+                        'category' => 'purchaseMonitor',
+                        'n_category' => 'paymentPlan',
+                        'type' => 'finance_dean_audit',
+                        'link' => '/purchase/paymentMonitor/detail#finance_dean_audit&' . $plan->id . '&' . $plan->current_payment_record_id,
+                    ]);
+                    $plan->notification()->delete();
+                    $plan->notification()->save($notification);    
+                }
+                break;
+            case 'finance_dean_audit':
                 $plan->update(['status' => 'process']);
                 $notification = Notification::create([
                     'permission' => 'can_process_payment_record',
@@ -113,7 +173,6 @@ class PaymentRecordsController extends Controller
                 break;
             
         }
-        $record->update($attributes);
         return new PaymentRecordResource($record);
     }
 

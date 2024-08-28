@@ -133,7 +133,7 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('users.update');
     Route::get('payment/plans/index',[PaymentPlansController::class, 'index'])
         ->name('payment.plans.index');
-    Route::get('payment/plans/getItem',[PaymentPlansController::class, 'getItem'])
+    Route::get('payment/plans/getItem/{plan}',[PaymentPlansController::class, 'getItem'])
         ->name('payment.plans.getItem');
     Route::post('payment/plans/store',[PaymentPlansController::class, 'store'])
         ->name('payment.plans.store');
