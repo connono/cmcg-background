@@ -28,6 +28,10 @@ class PaymentDocumentController extends Controller
     
         return  PaymentDocumentResource::collection($records);
     }
+    
+    public function getItem(Request $request, PaymentDocument $record) {
+        return new PaymentDocumentResource($record);
+    }
 
     public function item(Request $request, PaymentDocument $record) {
         $payment_process_records = PaymentProcessRecord::where('payment_document_id', $record->id)->get();
@@ -45,7 +49,7 @@ class PaymentDocumentController extends Controller
             array_push($data, [
                 'status' => $record->status,
                 'company' => $contract->contractor,
-                'equipment' => $equipment_apply_record->equipment,
+                'equipment' => $contract->equipment_apply_record_id ? $equipment_apply_record->equipment : '',
                 'price' => $contract->price,
                 'type' => $text,
                 'last_pay_date' => is_null($last_payment_process_record) ? '' : $last_payment_process_record->payment_date,
@@ -54,6 +58,8 @@ class PaymentDocumentController extends Controller
                 'rest_money' => $contract->price - $payment_process->assessments_count - $payment_process_record->assessment,
                 'payment_terms_now' => $payment_process_record->payment_terms,
                 'payment_terms' => $contract->payment_terms,
+                'contract_file' => $contract->contract_file,
+                'install_picture' => $contract->equipment_apply_record_id ? $equipment_apply_record->install_picture : '',
             ]);
         }
         return response()->json([
@@ -68,13 +74,15 @@ class PaymentDocumentController extends Controller
         $cwdepartment = Department::where('label', '财务科')->first();
         $leader = Leader::find($cwdepartment->chief_leader_id);
         $user = User::where('name', $leader->name)->first();
+        $leader_2 = Leader::find($department->chief_leader_id);
+        $user_2 = User::where('name', $leader_2->name)->first();
 
         $record = PaymentDocument::create([
             'create_date' => $request->create_date,
             'all_price' => $request->all_price,
             'status' => 'finance_audit',
             'user_id_1' => $request->user_id,
-            'user_id_2' => $department->chief_leader_id,
+            'user_id_2' => $user_2->id,
             'user_id_3' => $user->id,
         ]);
         $record->save();
@@ -94,7 +102,7 @@ class PaymentDocumentController extends Controller
                 }
 
                 $text = $payment_process->assessments_count == 0 ? '首款' : '尾款';
-                
+                $payment_process->notification()->delete();
                 array_push($data, [
                     'company' => $contract->contractor,
                     'equipment' => $equipment_apply_record->equipment,
@@ -108,10 +116,6 @@ class PaymentDocumentController extends Controller
                     'payment_terms' => $contract->payment_terms,
                 ]);
             }
-            $user_1_signature = User::find($record->user_id_1)->signature_picture;
-            $leader_2 = Leader::find($record->user_id_2);
-            $user_2_signature = User::where('name', $leader_2->name)->first()->signature_picture;
-            $signatures = [$user_1_signature, $user_2_signature];
         }
         $today = date('Y年m月d日');
         $notification = Notification::create([
@@ -119,13 +123,14 @@ class PaymentDocumentController extends Controller
             'title' => $today . "制单",
             'body' => json_encode($record),
             'category' => 'purchaseMonitor',
-            'n_category' => 'paymentProcess',
+            'n_category' => 'paymentDocument',
             'type' => 'finance_audit',
-            'link' => '/purchase/paymentProcess',
+            'link' => '/purchase/paymentDocument/detail#finance_audit&' . $record->id,
         ]);
+        $record->notification()->save($notification);
         return response()->json([
             'data' => $data,
-            'signature' => $signatures,
+            // 'signature' => $signatures,
             'id' =>  $record->id,
         ]);
     }
@@ -140,54 +145,143 @@ class PaymentDocumentController extends Controller
         $payment_process_records = PaymentProcessRecord::where('payment_document_id', $record->id)->get();
         switch ($record->status) {
             case 'finance_audit': 
-                $department = Department::where('label', '财务科')->first();
-                $leader = Leader::find($department->chief_leader_id);
-                $user = User::where('name', $leader->name)->first();
-                $record->update([
-                    'status'=> 'dean_audit',
-                    'user_id_3' => $user->id,
-                ]);
-                foreach ($payment_process_records as $payment_process_record) {
-                    $payment_process = PaymentProcess::find($payment_process_record->payment_process_id);
-                    $payment_process->update(['status' => 'dean_audit']);
-                }
-                return response()->json([
-                    'excel_url' => $record->excel_url,
-                    'user_id' => $user->id,
-                    'signature' => $user->signature_picture,
-                 ]);
-            case 'dean_audit':
                 $payment_process_record = PaymentProcessRecord::where('payment_document_id', $record->id)->first();
                 $department = Department::where('label', $payment_process_record->department)->first();
                 $leader = Leader::find($department->leader_id);
                 $user = User::where('name', $leader->name)->first();
                 $record->update([
-                    'status' => 'finance_dean_audit',
+                    'status'=> 'dean_audit',
                     'user_id_4' => $user->id,
                 ]);
                 foreach ($payment_process_records as $payment_process_record) {
                     $payment_process = PaymentProcess::find($payment_process_record->payment_process_id);
-                    $payment_process->update(['status' => 'finance_dean_audit']);
-                }                
+                    $payment_process->update(['status' => 'dean_audit']);
+                }
+                $old_notification = $record->notification()->first();
+                $notification = Notification::create([
+                    'user_id' => $user->id,
+                    'title' => $old_notification->title,
+                    'body' => json_encode($record),
+                    'category' => 'purchaseMonitor',
+                    'n_category' => 'paymentDocument',
+                    'type' => 'dean_audit',
+                    'link' => '/purchase/paymentDocument/detail#dean_audit&' . $record->id,
+                ]);
+                $record->notification()->delete();
+                $record->notification()->save($notification);
                 return response()->json([
                     'excel_url' => $record->excel_url,
                     'user_id' => $user->id,
-                    'signature' => $user->signature_picture,
+                    // 'signature' => $user->signature_picture,
                  ]);
-             case 'finance_dean_audit':
-                $record->update(['status' => 'finish']);
-                foreach ($payment_process_records as $payment_process_record) {
-                    $payment_process = PaymentProcess::find($payment_process_record->payment_process_id);
-                    $payment_process->update(['status' => 'process']);
-                }
+            case 'dean_audit':
                 $department = Department::where('label', '财务科')->first();
                 $leader = Leader::find($department->leader_id);
                 $user = User::where('name', $leader->name)->first();
+                if($user->id !== $record->user_id_4) {
+                    $record->update([
+                        'status' => 'finance_dean_audit',
+                        'user_id_5' => $user->id,
+                    ]);
+                    foreach ($payment_process_records as $payment_process_record) {
+                        $payment_process = PaymentProcess::find($payment_process_record->payment_process_id);
+                        $payment_process->update(['status' => 'finance_dean_audit']);
+                    }
+                    $old_notification = $record->notification()->first();
+                    $notification = Notification::create([
+                        'user_id' => $user->id,
+                        'title' => $old_notification->title,
+                        'body' => json_encode($record),
+                        'category' => 'purchaseMonitor',
+                        'n_category' => 'paymentDocument',
+                        'type' => 'finance_dean_audit',
+                        'link' => '/purchase/paymentDocument/detail#finance_dean_audit&' . $record->id,
+                    ]);
+                    $record->notification()->delete();
+                    $record->notification()->save($notification);         
+                } else {
+                    $record->update([
+                        'status' => 'upload',
+                        'user_id_5' => $user->id,
+                    ]);
+                    foreach ($payment_process_records as $payment_process_record) {
+                        $payment_process = PaymentProcess::find($payment_process_record->payment_process_id);
+                        $payment_process->update(['status' => 'upload']);
+                    }
+                    $old_notification = $record->notification()->first();
+                    $notification = Notification::create([
+                        'user_id' => $record->user_id_1,
+                        'title' => $old_notification->title,
+                        'body' => json_encode($record),
+                        'category' => 'purchaseMonitor',
+                        'n_category' => 'paymentDocument',
+                        'type' => 'upload',
+                        'link' => '/purchase/paymentDocument/detail#upload&' . $record->id,
+                    ]);
+                    $record->notification()->delete();
+                    $record->notification()->save($notification);     
+                    return response()->json([
+                        'excel_url' => $record->excel_url,
+                        'user_id' => $record->user_id_1,
+                    ]);
+                }
                 return response()->json([
                     'excel_url' => $record->excel_url,
                     'user_id' => $user->id,
-                    'signature' => $user->signature_picture,
                  ]);
+             case 'finance_dean_audit':
+                $record->update(['status' => 'upload']);
+                foreach ($payment_process_records as $payment_process_record) {
+                    $payment_process = PaymentProcess::find($payment_process_record->payment_process_id);
+                    $payment_process->update(['status' => 'upload']);
+                }
+                $old_notification = $record->notification()->first();
+                $notification = Notification::create([
+                    'user_id' => $record->user_id_1,
+                    'title' => $old_notification->title,
+                    'body' => json_encode($record),
+                    'category' => 'purchaseMonitor',
+                    'n_category' => 'paymentDocument',
+                    'type' => 'upload',
+                    'link' => '/purchase/paymentDocument/detail#upload&' . $record->id,
+                ]);
+                $record->notification()->delete();
+                $record->notification()->save($notification);     
+                return response()->json([
+                    'excel_url' => $record->excel_url,
+                    'user_id' => $record->user_id_1,
+                    // 'signature' => $user->signature_picture,
+                 ]);
+            case 'upload':
+                $record->update([
+                    'status' => 'finish',
+                    'payment_document_file' => $request->payment_document_file,
+                ]);
+                foreach ($payment_process_records as $payment_process_record) {
+                    $payment_process = PaymentProcess::find($payment_process_record->payment_process_id);
+                    $payment_process->update(['status' => 'process']);
+                    $recordJSON = json_encode($payment_process_record, true);
+                    $record_array = json_decode($recordJSON, true);
+                    $contract = Contract::find($payment_process->contract_id);
+                    $equipment_apply_record = EquipmentApplyRecord::find($contract->equipment_apply_record_id);
+                    $equipment_apply_recordJSON = json_encode($equipment_apply_record, true);
+                    $equipment_apply_record_array = json_decode($equipment_apply_recordJSON, true);
+                    $processJSON = json_encode($payment_process, true);
+                    $process_array = json_decode($processJSON, true);
+                    $information = (object) array_merge($record_array, $equipment_apply_record_array, $process_array);
+                    $notification = Notification::create([
+                        'permission' => 'can_process_payment_process_record',
+                        'title' => $payment_process->contract_name,
+                        'body' => json_encode($information),
+                        'category' => 'purchaseMonitor',
+                        'n_category' => 'paymentProcess',
+                        'type' => 'process',
+                        'link' => '/purchase/paymentProcess/detail#process&' . $payment_process->id . '&' . $payment_process->current_payment_record_id,
+                    ]);
+                    $payment_process->notification()->delete();
+                    $payment_process->notification()->save($notification);
+                }
+                $record->notification()->delete();
         }
 
     }

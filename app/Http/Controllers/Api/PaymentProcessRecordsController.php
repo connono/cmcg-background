@@ -56,11 +56,10 @@ class PaymentProcessRecordsController extends Controller
         $process = PaymentProcess::find($request->process_id);
         switch($request->method) {
             case 'apply':
-                $attributes = $request->only(['assessment']);
+                $attributes = $request->only(['assessment', 'payment_terms']);
                 $process->update([
                     'status' => 'document',
                     'assessment' => $request->assessment,
-                    'payment_terms' => $request->payment_terms,
                 ]);
                 $recordJSON = json_encode($record, true);
                 $record_array = json_decode($recordJSON, true);

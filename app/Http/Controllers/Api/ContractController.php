@@ -21,9 +21,10 @@ class ContractController extends Controller
         $user = User::find($request->user_id);
         $department = Department::find($user->department_id);
         $query = $contract->query();
+        $all_department_source = ['ALL', 'CG', 'CW', 'YB'];
         if(is_null($department->acronym)) 
             return response()->json([])->setStatusCode(200);
-        if($department->acronym != 'ALL'){
+        if(!in_array($department->acronym, $all_department_source)){
             $query = $query->where('department_source', $department->acronym);
         }
 
@@ -81,6 +82,7 @@ class ContractController extends Controller
             'law_advice' => $request->law_advice,
             'comment' => $request->comment,
             'isComplement' => $request->isComplement,
+            'payment_terms' => $request->payment_terms,
             'status' => 'approve',
         ]);
         $series_code = 1;
@@ -156,7 +158,7 @@ class ContractController extends Controller
                 $attributes = ['status' => 'upload'];
                 $old_notification = $contract->notification()->first();
                 $notification = Notification::create([
-                    'permission' => 'can_create_contract_process',
+                    'permission' => 'can_create_payment_process',
                     'title' => $contract->contract_name,
                     'body' => json_encode($contract),
                     'category' => 'purchaseMonitor',

@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\PaymentDocument;
 
 class PaymentProcessRecordResource extends JsonResource
 {
@@ -14,6 +15,20 @@ class PaymentProcessRecordResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        $payment_document = PaymentDocument::find($this->payment_document_id);
+        $payment_document_file = $payment_document->payment_document_file;
+        return [
+            'id' => $this->id,
+            'contract_name' => $this->contract_name,
+            'department' => $this->department,
+            'company' => $this->company,
+            'assessment' => $this->assessment,
+            'payment_voucher_file' => $this->payment_voucher_file,
+            'assessment_date' => $this->assessment_date,
+            'payment_file' => $this->payment_file,
+            'payment_process_id' => $this->payment_process_id,
+            'payment_document_file' => $payment_document_file,
+            'created_at' => $this->created_at,
+        ];
     }
 }

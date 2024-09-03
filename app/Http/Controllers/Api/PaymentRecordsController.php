@@ -93,7 +93,6 @@ class PaymentRecordsController extends Controller
                 $department1 = Department::where('label', $plan->department)->first();
                 $department2 = Department::where('label', '财务科')->first();
                 if ($department1->leader_id === $department2->leader_id) {
-                    return 1;
                     $plan->update(['status' => 'process']);
                     $notification = Notification::create([
                         'permission' => 'can_process_payment_record',
@@ -140,6 +139,7 @@ class PaymentRecordsController extends Controller
                 break;
             case 'process':
                 $attributes = $request->only(['assessment_date', 'payment_file']);
+                $record->update($attributes);
                 $assessments_count = $plan->assessments_count + $record->assessment;
                 $records_count = $plan->records_count + 1;
                 if ($plan->target_amount && $plan->target_amount == $assessments_count){

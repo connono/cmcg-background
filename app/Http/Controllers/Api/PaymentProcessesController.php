@@ -32,7 +32,6 @@ class PaymentProcessesController extends Controller
     }
 
     public function getItem(Request $request, PaymentProcess $process){
-        $process = PaymentProcess::find($request->id);
         return new PaymentProcessResource($process);
     }
 

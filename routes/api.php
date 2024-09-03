@@ -143,7 +143,7 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('payment.plans.delete');
     Route::get('payment/processes/index',[PaymentProcessesController::class, 'index'])
         ->name('payment.processes.index');
-    Route::get('payment/processes/getItem',[PaymentProcessesController::class, 'getItem'])
+    Route::get('payment/processes/getItem/{process}',[PaymentProcessesController::class, 'getItem'])
         ->name('payment.processes.getItem');
     Route::post('payment/processes/store',[PaymentProcessesController::class, 'store'])
         ->name('payment.processes.store');
@@ -237,7 +237,8 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('payment.document.records.delete');
     Route::post('payment/document/records/update/{record}',[PaymentDocumentController::class, 'update'])
         ->name('payment.document.records.update');
-
+    Route::get('payment/document/records/getItem/{record}', [PaymentDocumentController::class, 'getItem'])
+        ->name('payment.document.records.getItem');
     Route::get('consumable/tempory/serialNumber',[ConsumableTemporaryApplyController::class, 'getSerialNumber'])
         ->name('consumable.tempory.serialNumber');
     Route::post('consumable/tempory/store',[ConsumableTemporaryApplyController::class, 'store'])

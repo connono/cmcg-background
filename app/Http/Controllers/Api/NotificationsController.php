@@ -107,6 +107,62 @@ class NotificationsController extends Controller
             $notifications_process = Notification::where('permission', 'can_create_payment_process')->where('department_id', $user->department_id)->get();
             $notifications = $notifications->merge($notifications_process);
         }
+        if ($user->can('can_apply_tempory_consumable_record')) {
+            $notifications_process = Notification::where('permission', 'can_apply_tempory_consumable_record')->where('department_id', $user->department_id)->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_purchase_tempory_consumable_record')) {
+            $notifications_process = Notification::where('permission', 'can_purchase_tempory_consumable_record')->where('department_id', $user->department_id)->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_approve_tempory_consumable_record')) {
+            $notifications_process = Notification::where('permission', 'can_approve_tempory_consumable_record')->where('department_id', $user->department_id)->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_stop_tempory_consumable_record')) {
+            $notifications_process = Notification::where('permission', 'can_stop_tempory_consumable_record')->where('department_id', $user->department_id)->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_apply_consumable_record')) {
+            $notifications_process = Notification::where('permission', 'can_apply_consumable_record')->where('department_id', $user->department_id)->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_purchase_consumable_record')) {
+            $notifications_process = Notification::where('permission', 'can_purchase_consumable_record')->where('department_id', $user->department_id)->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_approve_consumable_record')) {
+            $notifications_process = Notification::where('permission', 'can_approve_consumable_record')->where('department_id', $user->department_id)->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_engineer_approve_consumable_record')) {
+            $notifications_process = Notification::where('permission', 'can_engineer_approve_consumable_record')->where('department_id', $user->department_id)->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_back_consumable_record')) {
+            $notifications_process = Notification::where('permission', 'can_back_consumable_record')->where('department_id', $user->department_id)->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_delete_consumable_record')) {
+            $notifications_process = Notification::where('permission', 'can_delete_consumable_record')->where('department_id', $user->department_id)->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_purchase_consumable_list')) {
+            $notifications_process = Notification::where('permission', 'can_purchase_consumable_list')->where('department_id', $user->department_id)->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_approve_consumable_list')) {
+            $notifications_process = Notification::where('permission', 'can_approve_consumable_list')->where('department_id', $user->department_id)->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_engineer_approve_consumable_list')) {
+            $notifications_process = Notification::where('permission', 'can_engineer_approve_consumable_list')->where('department_id', $user->department_id)->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
+        if ($user->can('can_delete_consumable_list')) {
+            $notifications_process = Notification::where('permission', 'can_delete_consumable_list')->where('department_id', $user->department_id)->get();
+            $notifications = $notifications->merge($notifications_process);
+        }
         return  NotificationResource::collection($notifications);
     }
 
