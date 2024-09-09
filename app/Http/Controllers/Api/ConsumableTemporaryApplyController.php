@@ -6,6 +6,8 @@ use App\Models\Department;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ConsumableTemporaryApply;
+use App\Models\Notification;
+
 class ConsumableTemporaryApplyController extends Controller
 {
     public function getSerialNumber(Request $request, ConsumableTemporaryApply $record){
@@ -32,7 +34,7 @@ class ConsumableTemporaryApplyController extends Controller
             'serial_number' => (string)$serial_number,
             'expired_at' => $expiredAt->toDateTimeString(),
             'record_serial_number' => $record->serial_number,
-        ])->setStatusCode(201);
+        ])->setStatusCode(200);
     }
 
     public function getItem(Request $request, ConsumableTemporaryApply $record){
@@ -66,19 +68,19 @@ class ConsumableTemporaryApplyController extends Controller
         $record->status = '1';
 
         $record->save();
-/*
+
         $notification = Notification::create([
-            'permission' => 'can_survey_equipment',
-            'title' => $record->equipment,
+            'permission' => 'can_purchase_tempory_consumable_record',
+            'title' => $record->consumable,
             'body' => json_encode($record),
-            'category' => 'apply',
-            'n_category' => 'equipmentApplyRecord',
-            'type' => 'survey', 
-            'link' => '/apply/equipment/detail#update&' . $record->id,
+            'category' => 'consumable',
+            'n_category' => 'temporary_consumable',
+            'type' => 'buy', 
+            'link' => '/consumable/tempory/apply/detail#update&' . $record->id,
         ]);
         $record->notification()->delete();
         $record->notification()->save($notification);
-*/
+
         \Cache::forget('consumabletemporary_serial_number_'.$request->serial_number);
 
         return new ConsumableTemporaryApplyRecordResource($record);
@@ -121,11 +123,23 @@ class ConsumableTemporaryApplyController extends Controller
         $method = $request->method;
         if($method === 'buy'){
             $attributes = $request->only(['product_id','arrive_date', 'arrive_price','company','telephone2','accept_file']);
-                $attributes['status'] = '2';
-                $record->update($attributes);
+            $attributes['status'] = '2';
+            $record->update($attributes);
+            $notification = Notification::create([
+                'permission' => 'can_approve_tempory_consumable_record',
+                'title' => $record->consumable,
+                'body' => json_encode($record),
+                'category' => 'consumable',
+                'n_category' => 'temporary_consumable',
+                'type' => 'vertify', 
+                'link' => '/consumable/tempory/apply/detail#update&' . $record->id,
+            ]);
+            $record->notification()->delete();
+            $record->notification()->save($notification);
         }elseif($method === 'vertify'){
             $attributes['status'] = '3';
             $record->update($attributes);
+            $record->notification()->delete();
         }
         return new ConsumableTemporaryApplyRecordResource($record);
     }
@@ -140,21 +154,24 @@ class ConsumableTemporaryApplyController extends Controller
             'telephone2' => null,
             'accept_file' => null,
         ]);
+        $notification = Notification::create([
+            'permission' => 'can_purchase_tempory_consumable_record',
+            'title' => $record->consumable,
+            'body' => json_encode($record),
+            'category' => 'consumable',
+            'n_category' => 'temporary_consumable',
+            'type' => 'buy', 
+            'link' => '/consumable/tempory/apply/detail#update&' . $record->id,
+        ]);
+        $record->notification()->delete();
+        $record->notification()->save($notification);
         return new ConsumableTemporaryApplyRecordResource($record);
     }
 
     public function stop(Request $request, ConsumableTemporaryApply $record){
-        
-            $attributes = $request->only(['stop_reason']);
-                $attributes['status'] = '4';
-                $record->update($attributes);
-    
-
-    }
-
-    public function layout(Request $request, ConsumableTemporaryApply $record){
-        $query = $record->query();
-        return new ConsumableTemporaryApplyRecordResource($record); 
+        $attributes = $request->only(['stop_reason']);
+        $attributes['status'] = '4';
+        $record->update($attributes);
     }
 }
 

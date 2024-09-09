@@ -16,7 +16,7 @@ class PaymentProcessRecordResource extends JsonResource
     public function toArray($request)
     {
         $payment_document = PaymentDocument::find($this->payment_document_id);
-        $payment_document_file = $payment_document->payment_document_file;
+        $payment_document_file = $payment_document ? $payment_document->payment_document_file : '';
         return [
             'id' => $this->id,
             'contract_name' => $this->contract_name,
@@ -28,6 +28,7 @@ class PaymentProcessRecordResource extends JsonResource
             'payment_file' => $this->payment_file,
             'payment_process_id' => $this->payment_process_id,
             'payment_document_file' => $payment_document_file,
+            'payment_document_id' => $this->payment_document_id,
             'created_at' => $this->created_at,
         ];
     }

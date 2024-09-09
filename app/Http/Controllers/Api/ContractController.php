@@ -28,6 +28,10 @@ class ContractController extends Controller
             $query = $query->where('department_source', $department->acronym);
         }
 
+        if ($request->department_source) {
+            $query = $query->where('department_source', $request->department_source);
+        }
+
         if (!is_null($request->contract_name)) {
             $query = $query->where('contract_name', 'like', '%'.$request->contract_name.'%');
         }
@@ -156,6 +160,7 @@ class ContractController extends Controller
         switch($request->method){
             case 'approve':
                 $attributes = ['status' => 'upload'];
+                $contract->update($attributes);
                 $old_notification = $contract->notification()->first();
                 $notification = Notification::create([
                     'permission' => 'can_create_payment_process',
@@ -169,13 +174,12 @@ class ContractController extends Controller
                 ]);
                 $contract->notification()->delete();
                 $contract->notification()->save($notification);
-                $contract->update($attributes);
                 break;
             case 'upload':
                 $attributes = $request->only(['contract_file']);
                 $attributes['status'] = 'finish';
-                $contract->notification()->delete();
                 $contract->update($attributes);
+                $contract->notification()->delete();
                 break;
         }
         return new ContractResource($contract);

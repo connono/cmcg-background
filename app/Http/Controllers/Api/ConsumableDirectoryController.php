@@ -9,14 +9,26 @@ use App\Models\Department;
 use App\Models\ConsumableDirectoryTable;
 use App\Models\ConsumableApplyTable;
 use App\Models\ConsumableTrendsTable;
+use App\Models\Notification;
 
 class ConsumableDirectoryController extends Controller
 {
     public function store(Request $request){
 
          if($request->vertify == '0'){  //审核通不过
-            ConsumableApplyTable::query()->where('serial_number', $request->consumable_apply_id)
-         ->update(['status' => '0']);
+            $consumable_apply_table = ConsumableApplyTable::query()->where('serial_number', $request->consumable_apply_id)->first();
+            $consumable_apply_table->update(['status' => '0']);
+            $notification = Notification::create([
+                'permission' => 'can_purchase_consumable_record',
+                'title' => $consumable_apply_table->consumable,
+                'body' => json_encode($consumable_apply_table),
+                'category' => 'consumable',
+                'n_category' => 'consumable_list',
+                'type' => 'buy', 
+                'link' => '/consumable/list/apply/detail#update&' . $consumable_apply_table->serial_number,
+            ]);
+            $consumable_apply_table->notification()->delete();
+            $consumable_apply_table->notification()->save($notification);
            return response()->json(['data' => ''])->setStatusCode(200);
         }elseif($request->vertify == '1'){ //审核通过
             ConsumableApplyTable::query()->where('serial_number', $request->consumable_apply_id)
@@ -50,15 +62,49 @@ class ConsumableDirectoryController extends Controller
         if($request->method == 'approve'){
             if($request->approve == '0'){  //审批通不过
                 $attributes['status'] = '1';
+                $record->update($attributes);
+                $notification = Notification::create([
+                    'permission' => 'can_purchase_consumable_list',
+                    'title' => $record->consumable,
+                    'body' => json_encode($record),
+                    'category' => 'consumable',
+                    'n_category' => 'consumable_list',
+                    'type' => 'buy', 
+                    'link' => '/consumable/list/apply/detail#update&' . $record->consumable_apply_id,
+                ]);
+                $record->notification()->delete();
+                $record->notification()->save($notification);
             }elseif($request->approve == '1'){//审批通过
                 $attributes['status'] = '3';
+                $record->update($attributes);
+                $notification = Notification::create([
+                    'permission' => 'can_engineer_approve_consumable_list',
+                    'title' => $record->consumable,
+                    'body' => json_encode($record),
+                    'category' => 'consumable',
+                    'n_category' => 'consumable_list',
+                    'type' => 'engineer_approve', 
+                    'link' => '/consumable/list/index/detail#update&' . $record->consumable_apply_id,
+                ]);
+                $record->notification()->delete();
+                $record->notification()->save($notification);
+
             }
-            $record->update($attributes);
         } elseif($request->method == 'vertify'){
             if($request->vertify == '0'){  //审核通不过
                 $attributes['status'] = '1';
                 $record->update($attributes);
-            
+                $notification = Notification::create([
+                    'permission' => 'can_purchase_consumable_list',
+                    'title' => $record->consumable,
+                    'body' => json_encode($record),
+                    'category' => 'consumable',
+                    'n_category' => 'consumable_list',
+                    'type' => 'buy', 
+                    'link' => '/consumable/list/index/detail#update&' . $record->consumable_apply_id,
+                ]);
+                $record->notification()->delete();
+                $record->notification()->save($notification);
             }elseif($request->vertify == '1'){ //审核通过
                 $record2 =ConsumableTrendsTable::where('consumable_apply_id', $request->consumable_apply_id)
                 ->orderBy('id', 'DESC')->first();
@@ -77,6 +123,7 @@ class ConsumableDirectoryController extends Controller
                 $attributes['exp_date'] = $request->exp_date;
                 $attributes['status'] = '0';
                 $record->update($attributes);
+                $record->notification()->delete();
             }
 
            

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
 
 class ConsumableTrendsTable extends Model
 {
@@ -27,7 +29,10 @@ class ConsumableTrendsTable extends Model
         'contact_file',                  // 合同附件
         'is_need',                       // 是否执行采购
         'reason',                        // 不执行采购理由
-
-       
     ];
+
+    public function notification(): HasOne
+    {
+        return $this->hasOne(\App\Models\Notification::class);
+    }
 }

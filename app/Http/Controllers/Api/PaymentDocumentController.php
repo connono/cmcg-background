@@ -169,11 +169,7 @@ class PaymentDocumentController extends Controller
                 ]);
                 $record->notification()->delete();
                 $record->notification()->save($notification);
-                return response()->json([
-                    'excel_url' => $record->excel_url,
-                    'user_id' => $user->id,
-                    // 'signature' => $user->signature_picture,
-                 ]);
+                return response()->json([])->setStatusCode(200); 
             case 'dean_audit':
                 $department = Department::where('label', '财务科')->first();
                 $leader = Leader::find($department->leader_id);
@@ -198,7 +194,8 @@ class PaymentDocumentController extends Controller
                         'link' => '/purchase/paymentDocument/detail#finance_dean_audit&' . $record->id,
                     ]);
                     $record->notification()->delete();
-                    $record->notification()->save($notification);         
+                    $record->notification()->save($notification);
+                    return response()->json([])->setStatusCode(200);         
                 } else {
                     $record->update([
                         'status' => 'upload',
@@ -220,15 +217,8 @@ class PaymentDocumentController extends Controller
                     ]);
                     $record->notification()->delete();
                     $record->notification()->save($notification);     
-                    return response()->json([
-                        'excel_url' => $record->excel_url,
-                        'user_id' => $record->user_id_1,
-                    ]);
+                    return response()->json([])->setStatusCode(200); 
                 }
-                return response()->json([
-                    'excel_url' => $record->excel_url,
-                    'user_id' => $user->id,
-                 ]);
              case 'finance_dean_audit':
                 $record->update(['status' => 'upload']);
                 foreach ($payment_process_records as $payment_process_record) {
@@ -247,11 +237,7 @@ class PaymentDocumentController extends Controller
                 ]);
                 $record->notification()->delete();
                 $record->notification()->save($notification);     
-                return response()->json([
-                    'excel_url' => $record->excel_url,
-                    'user_id' => $record->user_id_1,
-                    // 'signature' => $user->signature_picture,
-                 ]);
+                return response()->json([])->setStatusCode(200); 
             case 'upload':
                 $record->update([
                     'status' => 'finish',
@@ -282,6 +268,7 @@ class PaymentDocumentController extends Controller
                     $payment_process->notification()->save($notification);
                 }
                 $record->notification()->delete();
+                return response()->json([])->setStatusCode(200); 
         }
 
     }

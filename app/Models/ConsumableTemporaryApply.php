@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
 
 class ConsumableTemporaryApply extends Model
 {
@@ -37,4 +39,9 @@ class ConsumableTemporaryApply extends Model
        // 'is_stop',          //是否终止
         'stop_reason',      //终止原因
     ];
+
+    public function notification(): HasOne
+    {
+        return $this->hasOne(\App\Models\Notification::class);
+    }
 }

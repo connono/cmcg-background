@@ -253,8 +253,6 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('consumable.tempory.back');
     Route::post('consumable/tempory/stop/{record}',[ConsumableTemporaryApplyController::class, 'stop'])
         ->name('consumable.tempory.stop');
-    Route::get('consumabletemp/layout/{record}',[ConsumableTemporaryApplyController::class, 'layout'])
-        ->name('consumabletemp.layout');
         //耗材动态目录管理
     Route::get('consumable/apply/serialNumber',[ConsumableApplyController::class, 'getSerialNumber'])
         ->name('consumable.apply.serialNumber');

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
 
 class ConsumableDirectoryTable extends Model
 {
@@ -30,4 +32,9 @@ class ConsumableDirectoryTable extends Model
         'stop_date',                    // 停用日期
        
     ];
+
+    public function notification(): HasOne
+    {
+        return $this->hasOne(\App\Models\Notification::class);
+    }
 }

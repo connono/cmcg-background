@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
 
 class ConsumableApplyTable extends Model
 {
@@ -31,4 +33,9 @@ class ConsumableApplyTable extends Model
         'status',                        // 状态
        
     ];
+
+    public function notification(): HasOne
+    {
+        return $this->hasOne(\App\Models\Notification::class);
+    }
 }

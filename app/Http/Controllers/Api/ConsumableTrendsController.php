@@ -9,6 +9,10 @@ use App\Models\Department;
 use App\Models\ConsumableTrendsTable;
 use App\Models\ConsumableApplyTable;
 use App\Models\ConsumableDirectoryTable;
+use App\Models\Notification;
+use App\Models\Leader;
+use App\Models\User;
+
 class ConsumableTrendsController extends Controller
 {
     /*public function getSerialNumber(Request $request, ConsumableApplyTable $record){
@@ -68,11 +72,37 @@ class ConsumableTrendsController extends Controller
             "reason" => $request->reason,
         ]);
         if($request->method == 'apply'){
-            ConsumableApplyTable::query()->where('serial_number', $request->consumable_apply_id)
-              ->update(['status' => '1']);
+            $consumable_apply_table = ConsumableApplyTable::query()->where('serial_number', $request->consumable_apply_id)->first();
+            $consumable_apply_table->update(['status' => '1']);
+            $department = Department::where('label', '医学工程科')->first();
+            $leader = Leader::find($department->leader_id);
+            $user = User::where('name', $leader->name)->first();
+            $notification = Notification::create([
+            'user_id' => $user->id,
+            'title' => $record->consumable,
+            'body' => json_encode($consumable_apply_table),
+            'category' => 'consumable',
+            'n_category' => 'consumable_apply',
+            'type' => 'vertify', 
+            'link' => '/consumable/list/apply/detail#update&' . $consumable_apply_table->serial_number,
+            ]);
+            $consumable_apply_table->notification()->delete();
+            $consumable_apply_table->notification()->save($notification);
         }elseif ($request->method == 'directory'){
-            ConsumableDirectoryTable::query()->where('consumable_apply_id', $request->consumable_apply_id)
-              ->update(['status' => '2']);
+            $consumable_directory_table = ConsumableDirectoryTable::query()->where('consumable_apply_id', $request->consumable_apply_id)->first();
+            $consumable_directory_table->update(['status' => '2']);
+            $department = Department::where('label', '医学工程科')->first();
+            $leader = Leader::find($department->leader_id);
+            $user = User::where('name', $leader->name)->first();
+            $notification = Notification::create([
+                'user_id' => $user->id,
+                'title' => $record->consumable,
+                'body' => json_encode($consumable_directory_table),
+                'category' => 'consumable',
+                'n_category' => 'consumable_list',
+                'type' => 'vertify', 
+                'link' => '/consumable/list/index/detail#update&' . $consumable_directory_table->consumable_apply_id,
+                ]);
         }
 /*
         $notification = Notification::create([
