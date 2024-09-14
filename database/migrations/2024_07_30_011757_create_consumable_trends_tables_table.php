@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('parent_directory')->nullable()->comment('一级目录');
             $table->string('child_directory')->nullable()->comment('二级目录');
             $table->enum('apply_type',[0,1,2,3])->nullable()->comment('采购类型');//0中标产品，1阳光采购，2自行采购，3线下采购
-            $table->string('contact_file')->nullable()->comment('合同附件');
+            $table->string('contract_file')->nullable()->comment('合同附件');
             $table->enum('is_need',[0,1])->comment('是否执行采购'); //0不执行采购，1执行采购
             $table->string('reason')->nullable()->comment('不执行采购理由');
             $table->timestamps();

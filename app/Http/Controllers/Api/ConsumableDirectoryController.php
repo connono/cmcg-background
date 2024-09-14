@@ -25,14 +25,15 @@ class ConsumableDirectoryController extends Controller
                 'category' => 'consumable',
                 'n_category' => 'consumable_list',
                 'type' => 'buy', 
-                'link' => '/consumable/list/apply/detail#update&' . $consumable_apply_table->serial_number,
+                'link' => '/consumable/list/index/detail#update&' . $consumable_apply_table->serial_number,
             ]);
             $consumable_apply_table->notification()->delete();
             $consumable_apply_table->notification()->save($notification);
            return response()->json(['data' => ''])->setStatusCode(200);
         }elseif($request->vertify == '1'){ //审核通过
-            ConsumableApplyTable::query()->where('serial_number', $request->consumable_apply_id)
-            ->update(['status' => '3']);
+            $consumable_apply_table = ConsumableApplyTable::query()->where('serial_number', $request->consumable_apply_id)->first();
+            $consumable_apply_table->update(['status' => '3']);
+            $consumable_apply_table->notification()->delete();
             
             $record = ConsumableDirectoryTable::create([
                 "consumable_apply_id" => $request->consumable_apply_id,
@@ -70,7 +71,7 @@ class ConsumableDirectoryController extends Controller
                     'category' => 'consumable',
                     'n_category' => 'consumable_list',
                     'type' => 'buy', 
-                    'link' => '/consumable/list/apply/detail#update&' . $record->consumable_apply_id,
+                    'link' => '/consumable/list/index/detail#update&' . $record->consumable_apply_id,
                 ]);
                 $record->notification()->delete();
                 $record->notification()->save($notification);

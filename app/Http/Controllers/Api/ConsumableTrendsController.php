@@ -67,7 +67,7 @@ class ConsumableTrendsController extends Controller
             "parent_directory" => $request->parent_directory,
             "child_directory" => $request->child_directory,
             "apply_type" => $request->apply_type,
-            "contact_file" => $request->contact_file,
+            "contract_file" => $request->contract_file,
             "is_need" => $request->is_need,
             "reason" => $request->reason,
         ]);

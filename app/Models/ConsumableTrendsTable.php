@@ -26,7 +26,7 @@ class ConsumableTrendsTable extends Model
         'parent_directory',              // 一级目录
         'child_directory',               // 二级目录
         'apply_type',                    // 采购类型
-        'contact_file',                  // 合同附件
+        'contract_file',                  // 合同附件
         'is_need',                       // 是否执行采购
         'reason',                        // 不执行采购理由
     ];

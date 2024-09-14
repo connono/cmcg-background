@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\ConsumableApplyTable;
 
 class ConsumableDirectoryResource extends JsonResource
 {
@@ -14,10 +15,11 @@ class ConsumableDirectoryResource extends JsonResource
      */
     public function toArray($request)
     {
+        $consumable_apply_record = ConsumableApplyTable::where('serial_number', $this->consumable_apply_id)->first();
         return [
             "id"=> $this->id,
             "consumable_apply_id" => $this->consumable_apply_id,
-            "platform"=> $this->platform,
+            "platform_id"=> $this->platform_id,
             "department"=> $this->department,
             "consumable"=> $this->consumable,
             "model"=> $this->model,
@@ -34,7 +36,8 @@ class ConsumableDirectoryResource extends JsonResource
             "in_drugstore"=> $this->in_drugstore,
             "status"=> $this->status,   
             "stop_reason"=> $this->stop_reason,  
-            "stop_date"=> $this->stop_date,  
+            "stop_date"=> $this->stop_date,
+            "apply_file" => $consumable_apply_record->apply_file,
         ];
     }
 }

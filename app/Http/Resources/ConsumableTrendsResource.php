@@ -31,7 +31,7 @@ class ConsumableTrendsResource extends JsonResource
             "parent_directory"=> $this->parent_directory,
             "child_directory"=> $this->child_directory,
             "apply_type"=> $this->apply_type,
-            "contact_file"=> $this->contact_file,
+            "contract_file"=> $this->contract_file,
             "is_need"=> $this->is_need,   
             "reason"=> $this->reason,  
         ];

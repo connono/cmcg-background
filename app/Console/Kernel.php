@@ -9,6 +9,7 @@ use App\Models\PaymentPlan;
 use App\Models\PaymentProcess;
 use App\Models\Contract;
 use App\Models\EquipmentApplyRecord;
+use App\Models\ConsumableDirectoryTable;
 
 class Kernel extends ConsoleKernel
 {
@@ -63,6 +64,25 @@ class Kernel extends ConsoleKernel
                 ]);
                 // $process->notification()->delete();
                 $process->notification()->save($notification);
+            }
+        })->everyMinute();
+        $schedule->call(function (){
+            $records = ConsumableDirectoryTable::where('status', '0')->whereNotNull('exp_date')->whereYear('exp_date', date('Y'))->whereMonth('exp_date', date('m'))->get();
+            foreach($records as $record) {
+                $record->update([
+                    'status' => '1',
+                ]);
+                $notification = Notification::create([
+                    'permission' => 'can_purchase_consumable_list',
+                    'title' => $record->consumable,
+                    'body' => json_encode($record),
+                    'category' => 'consumable',
+                    'n_category' => 'consumable_list',
+                    'type' => 'buy', 
+                    'link' => '/consumable/list/index/detail#update&' . $record->consumable_apply_id,
+                ]);
+                // $record->notification()->delete();
+                $record->notification()->save($notification);
             }
         })->everyMinute();
     }
