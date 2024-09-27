@@ -24,6 +24,13 @@ class PaymentDocumentController extends Controller
     public function index(Request $request, PaymentDocument $record){
         $query = $record->query();
 
+        if ($request->status) {
+            $query = $query->where('status', $request->status);
+        }
+        if ($request->id) {
+            $query = $query->where('id', $request->id);
+        }
+
         $records = $query->paginate();
     
         return  PaymentDocumentResource::collection($records);

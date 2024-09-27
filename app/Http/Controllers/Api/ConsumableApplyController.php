@@ -129,13 +129,10 @@ class ConsumableApplyController extends Controller
         $query = $record->query();
        
         if (!is_null($request->department)) {
-            $department = Department::where('name', $request->department)->first();
-            $query = $query->where('department', $department->label);
+            $query = $query->where('department', $request->department);
         }
         if (!is_null($request->status)) {
-            
             $query = $query->where('status', $request->status);
-            
         }
         if (!is_null($request->consumable)) {
             $query = $query->where('consumable', 'like', '%'.$request->consumable.'%');
@@ -144,7 +141,7 @@ class ConsumableApplyController extends Controller
             $query = $query->where('apply_type', $request->apply_type);
         }
         if (!is_null($request->platform_id)) {
-            $query = $query->where('platform_id', $request->platform_id);
+            $query = $query->where('platform_id', 'like', '%'.$request->platform_id.'%');
         }
         if (!is_null($request->company)) {
             $query = $query->where('company',  'like', '%'.$request->company.'%');

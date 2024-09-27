@@ -144,13 +144,10 @@ public function index(Request $request, ConsumableDirectoryTable $record){
     $query = $record->query();
    
     if (!is_null($request->department)) {
-        $department = Department::where('name', $request->department)->first();
-        $query = $query->where('department', $department->label);
+        $query = $query->where('department', $request->department);
     }
     if (!is_null($request->status)) {
-        
         $query = $query->where('status', $request->status);
-        
     }
     if (!is_null($request->consumable)) {
         $query = $query->where('consumable', 'like', '%'.$request->consumable.'%');
@@ -159,7 +156,7 @@ public function index(Request $request, ConsumableDirectoryTable $record){
         $query = $query->where('apply_type', $request->apply_type);
     }
     if (!is_null($request->platform_id)) {
-        $query = $query->where('platform_id', $request->platform_id);
+        $query = $query->where('platform_id', 'like', '%'.$request->platform_id.'%');
     }
     if (!is_null($request->company)) {
         $query = $query->where('company',  'like', '%'.$request->company.'%');
@@ -175,6 +172,11 @@ public function index(Request $request, ConsumableDirectoryTable $record){
 public function getItem(Request $request, ConsumableDirectoryTable $record) {
     $record = ConsumableDirectoryTable::where('consumable_apply_id', $request->serial_number)->first();
     return new ConsumableDirectoryResource($record);
+}
+public function stop(Request $request, ConsumableDirectoryTable $record){
+    $attributes = $request->only(['stop_reason']);
+    $attributes['status'] = '4';
+    $record->update($attributes);
 }
  
 }

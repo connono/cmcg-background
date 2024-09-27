@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\LeaderController;
 use App\Http\Controllers\Api\PaymentDocumentController;
 use App\Http\Controllers\Api\PaymentProcessRecordsController;
 use App\Http\Controllers\Api\EngineersController;
+use App\Http\Controllers\Api\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UsersController;
@@ -123,8 +124,16 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('maintain.update');
     Route::get('permissions/{user}', [PermissionsController::class, 'index'])
         ->name('permissions.index');
-    Route::get('allRoles', [PermissionsController::class, 'allRoles'])
+    Route::get('allRoles', [RoleController::class, 'allRoles'])
         ->name('allRoles');
+    Route::get('userAllRoles', [RoleController::class, 'userAllRoles'])
+        ->name('userAllRoles');   
+    Route::get('allPermissions', [PermissionsController::class, 'allPermissions'])
+        ->name('allPermissions');
+    Route::post('updateRole', [RoleController::class, 'updateRole'])
+        ->name('updateRole');      
+    Route::post('createRole', [RoleController::class, 'createRole'])
+        ->name('createRole');     
     Route::post('permissions/store', [PermissionsController::class, 'store'])
         ->name('permissions.store');
     Route::patch('permissions/update', [PermissionsController::class, 'update'])
@@ -177,6 +186,8 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('payment.process.records.back');
     Route::get('notifications/index/{user}',[NotificationsController::class, 'index'])
         ->name('notifications.index');
+    Route::get('notifications/ignore/{notification}',[NotificationsController::class, 'ignore'])
+        ->name('notifications.ignore');    
     Route::delete('notifications/delete',[NotificationsController::class, 'delete'])
         ->name('notifications.delete');
     Route::get('department/index',[DepartmentController::class, 'index'])
@@ -251,8 +262,8 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('consumable.tempory.update');
     Route::post('consumable/tempory/back/{record}',[ConsumableTemporaryApplyController::class, 'back'])
         ->name('consumable.tempory.back');
-    Route::post('consumable/tempory/stop/{record}',[ConsumableTemporaryApplyController::class, 'stop'])
-        ->name('consumable.tempory.stop');
+    Route::post('consumable/directory/stop/{record}',[ConsumableDirectoryController::class, 'stop'])
+        ->name('consumable.directory.stop');
         //耗材动态目录管理
     Route::get('consumable/apply/serialNumber',[ConsumableApplyController::class, 'getSerialNumber'])
         ->name('consumable.apply.serialNumber');

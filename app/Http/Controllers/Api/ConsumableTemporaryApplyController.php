@@ -62,7 +62,7 @@ class ConsumableTemporaryApplyController extends Controller
             'reason' => $request->reason,
             'apply_date' => $request->apply_date,
             'apply_type' => $request->apply_type,
-            'apply_file' => $request->apply_file,
+            'contract_file' => $request->contract_file,
         ]);
         $record->serial_number = $request->serial_number;
         $record->status = '1';
@@ -90,8 +90,7 @@ class ConsumableTemporaryApplyController extends Controller
         $query = $record->query();
        
         if (!is_null($request->department)) {
-            $department = Department::where('name', $request->department)->first();
-            $query = $query->where('department', $department->label);
+            $query = $query->where('department', $request->department);
         }
         if (!is_null($request->status)) {
             
@@ -105,7 +104,7 @@ class ConsumableTemporaryApplyController extends Controller
             $query = $query->where('apply_type', $request->apply_type);
         }
         if (!is_null($request->product_id)) {
-            $query = $query->where('product_id', $request->product_id);
+            $query = $query->where('product_id', 'like', '%'.$request->product_id.'%');
         }
         if (!is_null($request->company)) {
             $query = $query->where('company',  'like', '%'.$request->company.'%');

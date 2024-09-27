@@ -21,6 +21,7 @@ class Notification extends Model
         'user_id',
         'contract_id',
         'department_id',
+        'is_ignore',
     ];
 
     public function plan(): BelongsTo

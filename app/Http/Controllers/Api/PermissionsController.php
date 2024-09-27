@@ -33,11 +33,12 @@ class PermissionsController extends Controller
 
         return $permissions;
     }
-    
-    public function allRoles(Request $request)
+
+
+    public function allPermissions(Request $request)
     {
-        
-        $all_roles = Role::all()->pluck('name');
-        return $all_roles;
+        $all_permissions = Permission::all();
+        return $all_permissions;
     }
+    
 }

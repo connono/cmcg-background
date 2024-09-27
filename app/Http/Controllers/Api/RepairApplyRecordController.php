@@ -14,6 +14,9 @@ class RepairApplyRecordController extends Controller
 {
     public function index(Request $request, RepairApplyRecord $record){
         $query = $record->query();
+        if (!is_null($request->serial_number)) {
+            $query = $query->where('serial_number', 'like', '%'.$request->serial_number.'%');
+        }
         if (!is_null($request->department)) {
             $department = Department::where('name', $request->department)->first();
             $query = $query->where('department', $department->label);

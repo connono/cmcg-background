@@ -15,6 +15,10 @@ class PaymentPlansController extends Controller
         $query = $plan->query();
         if ($request->department && $request->department !== '财务科' && $request->department !== '院长室') {
             $query = $query->where('department', $request->department);
+        } else {
+            if ($request->selected_department) {
+                $query = $query->where('department', $request->selected_department);
+            }
         }
         if ($request->status) {
             $query = $query->where('status', $request->status);
