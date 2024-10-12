@@ -85,6 +85,7 @@ class ContractController extends Controller
             'dean_type' => $request->dean_type,
             'law_advice' => $request->law_advice,
             'comment' => $request->comment,
+            'is_pay' => $request->is_pay,
             'isComplement' => $request->isComplement,
             'payment_terms' => $request->payment_terms,
             'status' => 'approve',
@@ -110,7 +111,6 @@ class ContractController extends Controller
             'n_category' => 'contract',
             'type' => 'approve',
             'link' => '/purchase/contract/detail#' . $contract->id,
-            'department_id' => $department->id,
         ]);
         $contract->notification()->save($notification);
         if ($request->equipment_apply_record_id) {
@@ -134,7 +134,6 @@ class ContractController extends Controller
                 'type' => 'install',
                 'link' => '/apply/equipment/detail#update&' . $equipment_apply_record->id,
                 'user_id' => $user->id,
-                'department_id' => $department->id, 
             ]);
             $equipment_apply_record->notification()->delete();
             $equipment_apply_record->notification()->save($notification);
@@ -161,7 +160,7 @@ class ContractController extends Controller
             case 'approve':
                 $attributes = ['status' => 'upload'];
                 $contract->update($attributes);
-                $old_notification = $contract->notification()->first();
+                $department = Department::where('acronym', $contract->department_source)->first();
                 $notification = Notification::create([
                     'permission' => 'can_create_payment_process',
                     'title' => $contract->contract_name,
@@ -170,7 +169,7 @@ class ContractController extends Controller
                     'n_category' => 'contract',
                     'type' => 'upload',
                     'link' => '/purchase/contract/detail#' . $contract->id,
-                    'department_id' => $old_notification->department_id,
+                    'department_id' => $department->id,
                 ]);
                 $contract->notification()->delete();
                 $contract->notification()->save($notification);
@@ -212,7 +211,7 @@ class ContractController extends Controller
     }
     
     public function delete(Request $request, Contract $contract) {
-        $old_notification = $contract->notification()->first();
+        $department = Department::where('acronym', $contract->department_source)->first();
         $notification = Notification::create([
             'permission' => 'can_create_payment_process',
             'title' => $contract->contract_name,
@@ -221,7 +220,7 @@ class ContractController extends Controller
             'n_category' => 'contract',
             'type' => 'delete',
             'link' => '/purchase/contract#create',
-            'department_id' => $old_notification->department_id,
+            'department_id' => $department->id,
         ]);
         $notification->link = '/purchase/contract#create&' . $notification->id;
         $notification->save();

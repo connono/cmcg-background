@@ -10,6 +10,7 @@ use App\Models\PaymentProcess;
 use App\Models\Contract;
 use App\Models\EquipmentApplyRecord;
 use App\Models\ConsumableDirectoryTable;
+use App\Models\Department;
 
 class Kernel extends ConsoleKernel
 {
@@ -27,8 +28,11 @@ class Kernel extends ConsoleKernel
                 $plan->update([
                     'status' => 'apply',
                 ]);
+                $department = Department::where('label', $plan->department)->first();
+                //付款计划通知
                 $notification = Notification::create([
-                    'permission' => $plan->department,
+                    'permission' => 'can_create_payment_plan',
+                    'department_id' => $department->id,
                     'title' => $plan->contract_name,
                     'body' => json_encode($plan),
                     'category' => 'purchaseMonitor',
@@ -53,8 +57,10 @@ class Kernel extends ConsoleKernel
                 $processJSON = json_encode($process, true);
                 $process_array = json_decode($processJSON, true);
                 $information = (object) array_merge($record_array, $process_array);
+                $department = Department::where('label', $process->department)->first();
                 $notification = Notification::create([
-                    'permission' => $process->department,
+                    'permission' => 'can_create_payment_process',
+                    'department_id' => $department->id,
                     'title' => $process->contract_name,
                     'body' => json_encode($information, true),
                     'category' => 'purchaseMonitor',

@@ -159,8 +159,9 @@ class PaymentRecordsController extends Controller
                     'records_count' => $records_count,
                     'assessments_count' => $assessments_count, 
                 ]);
+                $department = Department::where('label', $plan->deparment)->first();
                 $notification = Notification::create([
-                    'permission' => $plan->department,
+                    'department' => $department->id,
                     'title' => $plan->contract_name,
                     'body' => json_encode($plan),
                     'category' => 'purchaseMonitor',
@@ -183,8 +184,9 @@ class PaymentRecordsController extends Controller
             'assessment' => null,
             'payment_voucher_file' => null,
         ]);
+        $department = Department::where('label', $plan->deparment)->first();
         $notification = Notification::create([
-            'permission' => $plan->department,
+            'department' => $department->id,
             'title' => $plan->contract_name,
             'body' => json_encode($plan),
             'category' => 'purchaseMonitor',

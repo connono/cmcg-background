@@ -32,6 +32,7 @@ class Contract extends Model
         'law_advice',
         'purchase_type',
         'category',
+        'is_pay',
     ];
 
     public function manager (): HasOne
