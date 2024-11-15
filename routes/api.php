@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ConsumableNetController;
 use App\Http\Controllers\Api\ContractController;
 use App\Http\Controllers\Api\LeaderController;
 use App\Http\Controllers\Api\PaymentDocumentController;
@@ -291,6 +292,8 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('consumable.directory.index');  
     Route::get('consumable/directory/getItem',[ConsumableDirectoryController::class, 'getItem'])
         ->name('consumable.directory.getItem');  
+    Route::get('consumable/net/index',[ConsumableNetController::class, 'index'])
+        ->name('consumable.net.index'); 
 
     Route::middleware('auth:api')->group(function() {
         // 当前登录用户信息

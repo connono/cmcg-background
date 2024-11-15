@@ -17,7 +17,10 @@ class NotificationsController extends Controller
         $filtered_notifications = $notifications->filter(function ($notification) use ($user) {
             if($notification->is_ignore === 'true') return false;
             // 如果通知user_id对应则推送
-            if($notification->user_id === $user->id) return true;
+            if(!is_null($notification->user_id)) {
+                if($notification->user_id === $user->id) return true;
+                else return false;
+            }
             // 如果通知有科室指定
             if($notification->department_id) {
                 //如果科室指定相符
