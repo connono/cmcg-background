@@ -8,6 +8,9 @@ use App\Models\ConsumableNet;
 use Illuminate\Http\Request;
 use App\Imports\ConsumableNetImport;
 use Maatwebsite\Excel\Facades\Excel;
+use SebastianBergmann\Exporter\Exporter;
+use App\Exports\ConsumableNetsExport;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class ConsumableNetController extends Controller
 {
@@ -46,7 +49,28 @@ class ConsumableNetController extends Controller
         if (!is_null($request->net_status)) {
             $query = $query->where('net_status', $request->net_status);
         }
+                $query = $query->orderBy('price', direction: 'asc');
+
+        if (!is_null($request->is_download)) {
+            if($request->is_download == 'true') {
+                return (new FastExcel($query->get()))->download('file.xlsx');
+            }
+        }
         $records = $query->paginate($request->pageSize);
         return  ConsumableNetResource::collection($records);
+    }
+
+    public function select(Request $request) {
+        $original_net = ConsumableNet::where('product_id', $request->product_id)->first();
+        $nets = ConsumableNet::where('child_directory', $original_net->child_directory)->get();
+        $selected_nets = collect();
+        foreach($nets as $net){
+            if($net->price != 0 && $net->price < $request->price) {
+                if($selected_nets->where('price', $net->price)->where('manufacturer', $net->manufacturer)->count() === 0) {
+                    $selected_nets->push($net);
+                }
+            }
+        }
+        return ConsumableNetResource::collection($selected_nets);
     }
 }

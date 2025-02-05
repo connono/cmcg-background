@@ -15,13 +15,13 @@ return new class extends Migration
     {
         Schema::create('consumable_nets', function (Blueprint $table) {
             $table->id();
-            $table->string('consumable_net_id')->comment(comment: '挂网结果id');
+            $table->string('consumable_net_id')->comment('挂网结果id');
             $table->string('category')->comment('分类');
             $table->string('parent_directory')->nullable()->comment('一级目录');
             $table->string('child_directory')->nullable()->comment('二级目录');
             $table->string('product_id')->comment('产品id');
             $table->string('consumable')->nullable()->comment('产品名称 ');
-            $table->string('registration_num')->nullable()->comment('注册证号');
+            $table->string('registration_num')->nullable()->comment('注册证号'); 
             $table->string('registration_name')->nullable()->comment('注册证名称');
             $table->date('registration_date')->nullable()->comment('注册证有效期');
             $table->string('consumable_encoding')->nullable()->comment('国家27位编码');
@@ -35,7 +35,7 @@ return new class extends Migration
             $table->bigInteger('tempory_price')->nullable()->comment('限价');
             $table->string('source_name')->nullable()->comment('来源名称');
             $table->string('product_remark')->nullable()->comment('产品备注');
-            $table->date('net_date')->nullable()->comment(comment: '挂网时间');
+            $table->date('net_date')->nullable()->comment( '挂网时间');
             $table->string(column: 'purchase_category')->nullable()->comment('采购类别');
             $table->string(column: 'net_status')->nullable()->comment('挂网状态');
             $table->date(column: 'withdrawal_time')->nullable()->comment('撤废时间');

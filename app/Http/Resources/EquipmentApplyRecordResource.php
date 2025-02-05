@@ -15,9 +15,6 @@ class EquipmentApplyRecordResource extends JsonResource
      */
     public function toArray($request)
     {
-        $equipment_apply_record = EquipmentApplyRecord::find($this->id);
-        $contract = $equipment_apply_record ? $equipment_apply_record->contract()->first() : null;
-        $contract_id = $contract ? $contract->id : null;
 
         return [
             "id"=> $this->id,
@@ -55,7 +52,7 @@ class EquipmentApplyRecordResource extends JsonResource
             "warehousing_date"=> $this->warehousing_date,
             "is_stop" => $this->is_stop,
             "stop_reason" => $this->stop_reason,
-            "contract_id"=> $contract_id,
+            "contract_id"=> $this->contract_id,
         ];
     }
 }

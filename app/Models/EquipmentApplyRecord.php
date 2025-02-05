@@ -54,6 +54,8 @@ class EquipmentApplyRecord extends Model
         // 中止
         'is_stop',          //是否终止
         'stop_reason',      //终止原因
+
+        'contract_id',      //合同外键
     ];
 
     public function advanceRecord(): BelongsTo

@@ -194,62 +194,72 @@ class EquipmentApplyRecordController extends Controller
                 $record->notification()->save($notification);
                 break;
             case 'install':
+                //寻找所有同一份合同的申请记录
                 $attributes = $request->only(['install_date', 'install_picture']);
                 $attributes['status'] = '6';
                 $attributes['advance_status'] = '0';
-                $record->update($attributes);
-                $notification = Notification::create([
-                    'permission' => 'can_engineer_approve_equipment',
-                    'title' => $record->equipment,
-                    'body' => json_encode($record),
-                    'category' => 'apply',
-                    'n_category' => 'equipmentApplyRecord',
-                    'type' => 'engineer_approve',
-                    'link' => '/apply/equipment/detail#update&' . $record->id,
-                ]);
-                $record->notification()->delete();
-                $record->notification()->save($notification);
+                $records = EquipmentApplyRecord::where('contract_id', $record->contract_id)->get();
+                $records->each(function ($r, $key) use ($attributes) {
+                    $r->update($attributes);
+                    $notification = Notification::create([
+                        'permission' => 'can_engineer_approve_equipment',
+                        'title' => $r->equipment,
+                        'body' => json_encode($r),
+                        'category' => 'apply',
+                        'n_category' => 'equipmentApplyRecord',
+                        'type' => 'engineer_approve',
+                        'link' => '/apply/equipment/detail#update&' . $r->id,
+                    ]);
+                    $r->notification()->delete();
+                    $r->notification()->save($notification);    
+                });
                 break;
             case 'engineer_approve':
+                $records = EquipmentApplyRecord::where('contract_id', $record->contract_id)->get();
                 $attributes = $request->only(['isAdvance']);
                 $attributes['status'] = '7';
                 $attributes['advance_status'] = '0';
-                $record->update($attributes);
-                $notification = Notification::create([
-                    'permission' => 'can_warehouse_equipment',
-                    'title' => $record->equipment,
-                    'body' => json_encode($record),
-                    'category' => 'apply',
-                    'n_category' => 'equipmentApplyRecord',
-                    'type' => 'warehouse',
-                    'link' => '/apply/equipment/detail#update&' . $record->id,
-                ]);
-                $record->notification()->delete();
-                $record->notification()->save($notification);
+                $records->each(function ($r, $key) use ($attributes) {
+                    $r->update($attributes);
+                    $notification = Notification::create([
+                        'permission' => 'can_warehouse_equipment',
+                        'title' => $r->equipment,
+                        'body' => json_encode($r),
+                        'category' => 'apply',
+                        'n_category' => 'equipmentApplyRecord',
+                        'type' => 'warehouse',
+                        'link' => '/apply/equipment/detail#update&' . $r->id,
+                    ]);
+                    $r->notification()->delete();
+                    $r->notification()->save($notification);
+                });
                 break;
             case 'warehouse':
+                $records = EquipmentApplyRecord::where('contract_id', $record->contract_id)->get();
                 $attributes = $request->only(['warehousing_date']);
                 $attributes['status'] = '8';
-                $record->update($attributes);
-                $contract =  $record->contract()->first();
-                $json = json_encode($contract, true);
-                $contract_array = json_decode($json, true);
-                $information = (object) array_merge([
-                    'equipment' => $record->equipment,
-                    'count' => $record->count,
-                    'budget' => $record->budget,
-                ], $contract_array);
-                $notification = Notification::create([
-                    'permission' => 'can_engineer_approve_equipment',
-                    'title' => $record->equipment,
-                    'body' => json_encode($information),
-                    'category' => 'apply',
-                    'n_category' => 'equipmentApplyRecord',
-                    'type' => 'finish',
-                    'link' => '/purchase/contract/detail#' . $contract->id,
-                ]);
-                $record->notification()->delete();
-                $record->notification()->save($notification);
+                $records->each(function ($r, $key) use ($attributes) {
+                    $r->update($attributes);
+                    $contract = Contract::find($r->contract_id);
+                    $json = json_encode($contract, true);
+                    $contract_array = json_decode($json, true);
+                    $information = (object) array_merge([
+                        'equipment' => $r->equipment,
+                        'count' => $r->count,
+                        'budget' => $r->budget,
+                    ], $contract_array);
+                    $notification = Notification::create([
+                        'permission' => 'can_engineer_approve_equipment',
+                        'title' => $r->equipment,
+                        'body' => json_encode($information),
+                        'category' => 'apply',
+                        'n_category' => 'equipmentApplyRecord',
+                        'type' => 'finish',
+                        'link' => '/purchase/contract/detail#' . $contract->id,
+                    ]);
+                    $r->notification()->delete();
+                    $r->notification()->save($notification);
+                });
                 break;
         }
         return new EquipmentApplyRecordResource($record);
@@ -302,34 +312,46 @@ class EquipmentApplyRecordController extends Controller
                 $record->notification()->delete();
                 break;
             case '5':
-                $record->update([
-                    'status' => '4', 
-                ]);
-                Contract::where('equipment_apply_record_id', $record->id)->delete();
-                $record->notification()->delete();
+                $records = EquipmentApplyRecord::where('contract_id', $record->contract_id)->get();
+                $records->each(function ($r, $key) {
+                    $r->update([
+                        'status' => '4',
+                        'contract_id' => null,
+                    ]);
+                    $r->notification()->delete();
+                });
                 break;
             case '6':
-                $record->update([
-                    'status' => '5',
-                    'install_date' => null,
-                    'install_picture' => null,
-                ]);
-                $record->notification()->delete();
+                $records = EquipmentApplyRecord::where('contract_id', $record->contract_id)->get();
+                $records->each(function ($r, $key) {
+                    $r->update([
+                        'status' => '5',
+                        'install_date' => null,
+                        'install_picture' => null,
+                    ]);
+                    $r->notification()->delete();
+                });
                 break;
             case '7':
-                $record->update([
-                    'status' => '6',
-                    'isAdvance' => null,
-                    'advance_status' => null,
-                ]);
-                $record->notification()->delete();
+                $records = EquipmentApplyRecord::where('contract_id', $record->contract_id)->get();
+                $records->each(function ($r, $key) {
+                    $r->update([
+                        'status' => '6',
+                        'isAdvance' => null,
+                        'advance_status' => null,
+                    ]);
+                    $r->notification()->delete();
+                });
                 break;
             case '8':
-                $record->update([
-                    'status' => '7',
-                    'warehousing_date' => null,
-                ]);
-                $record->notification()->delete(); 
+                $records = EquipmentApplyRecord::where('contract_id', $record->contract_id)->get();
+                $records->each(function ($r, $key) {
+                    $r->update([
+                        'status' => '7',
+                        'warehousing_date' => null,
+                    ]);
+                    $r->notification()->delete();
+                });
                 break;
         }
         return new EquipmentApplyRecordResource($record);

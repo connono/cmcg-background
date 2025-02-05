@@ -33,6 +33,7 @@ class Contract extends Model
         'purchase_type',
         'category',
         'is_pay',
+        'equipment_apply_record_id',
     ];
 
     public function manager (): HasOne

@@ -27,6 +27,7 @@ class PaymentProcess extends Model
         'assessments_count',
         'status',
         'current_payment_record_id',
+        'install_picture',
     ];
 
     public function records(): HasMany

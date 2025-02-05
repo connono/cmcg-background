@@ -56,6 +56,12 @@ class ContractController extends Controller
             $query = $query->where('status', $request->status);
         }
 
+        if (!is_null($request->created_at)) {
+            $start = \Carbon\Carbon::parse($request->created_at[0]);
+            $end = \Carbon\Carbon::parse($request->created_at[1]);
+            $query = $query->whereBetween('created_at', [$start, $end]);
+        }
+
         if (!is_null($request->isPaginate)) {
             $contracts = $query->paginate();
         } else {
@@ -113,31 +119,6 @@ class ContractController extends Controller
             'link' => '/purchase/contract/detail#' . $contract->id,
         ]);
         $contract->notification()->save($notification);
-        if ($request->equipment_apply_record_id) {
-            $equipment_apply_record = EquipmentApplyRecord::find($request->equipment_apply_record_id);
-            $equipment_apply_record->contract()->save($contract);
-            $equipment_apply_record->update([
-                'price' => $contract->price,
-                'purchase_picture' => $contract->contract_file,
-                'status' => '5'
-            ]);
-            $department_string_array = explode(",", $equipment_apply_record->department);
-            $department = Department::where('label', $department_string_array[0])->first();
-            $engineer_id = $department->engineer_id;
-            $user = User::where('engineer_id', $engineer_id)->first();
-            $notification = Notification::create([
-                'permission' => 'can_install_equipment',
-                'title' => $equipment_apply_record->equipment,
-                'body' => json_encode($equipment_apply_record),
-                'category' => 'apply',
-                'n_category' => 'equipmentApplyRecord',
-                'type' => 'install',
-                'link' => '/apply/equipment/detail#update&' . $equipment_apply_record->id,
-                'user_id' => $user->id,
-            ]);
-            $equipment_apply_record->notification()->delete();
-            $equipment_apply_record->notification()->save($notification);
-        }
         if ($request->instrument_apply_record_id) {
             $instrument_apply_record = InstrumentApplyRecord::find($request->instrument_apply_record_id);
             $instrument_apply_record->contract()->save($contract);
@@ -152,6 +133,33 @@ class ContractController extends Controller
         // $dean = User::find($request->dean_id);
         // $contract->dean()->save($dean);
 
+        return new ContractResource($contract);
+    }
+
+    public function addEquipmentApplyRecord(Request $request, Contract $contract) {
+        $equipment_apply_record = EquipmentApplyRecord::find($request->equipment_apply_record_id);
+        $equipment_apply_record->update([
+            'price' => $contract->price,
+            'purchase_picture' => $contract->contract_file,
+            'contract_id' => $contract->id,
+            'status' => '5'
+        ]);
+        $department_string_array = explode(",", $equipment_apply_record->department);
+        $department = Department::where('label', $department_string_array[0])->first();
+        $engineer_id = $department->engineer_id;
+        $user = User::where('engineer_id', $engineer_id)->first();
+        $notification = Notification::create([
+            'permission' => 'can_install_equipment',
+            'title' => $equipment_apply_record->equipment,
+            'body' => json_encode($equipment_apply_record),
+            'category' => 'apply',
+            'n_category' => 'equipmentApplyRecord',
+            'type' => 'install',
+            'link' => '/apply/equipment/detail#update&' . $equipment_apply_record->id,
+            'user_id' => $user->id,
+        ]);
+        $equipment_apply_record->notification()->delete();
+        $equipment_apply_record->notification()->save($notification);
         return new ContractResource($contract);
     }
 

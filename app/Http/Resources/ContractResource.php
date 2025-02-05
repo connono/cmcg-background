@@ -36,6 +36,7 @@ class ContractResource extends JsonResource
             'contract_file' => $this->contract_file,
             'is_pay' => $this->is_pay,
             'equipment_apply_record_id' => $this->equipment_apply_record_id,
+            'created_at' => $this->created_at,
         ];
     }
 }

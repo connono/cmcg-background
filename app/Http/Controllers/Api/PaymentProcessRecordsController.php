@@ -60,6 +60,7 @@ class PaymentProcessRecordsController extends Controller
                 $process->update([
                     'status' => 'document',
                     'assessment' => $request->assessment,
+                    'install_picture' => $request->install_picture,
                 ]);
                 $recordJSON = json_encode($record, true);
                 $record_array = json_decode($recordJSON, true);
@@ -69,7 +70,9 @@ class PaymentProcessRecordsController extends Controller
                 $equipment_apply_record_array = json_decode($equipment_apply_recordJSON, true);
                 $processJSON = json_encode($process, true);
                 $process_array = json_decode($processJSON, true);
-                $information = (object) array_merge($record_array, $equipment_apply_record_array, $process_array);
+                if(is_null($equipment_apply_record_array)) 
+                    $information = (object) array_merge($record_array, $process_array);
+                else $information = (object) array_merge($record_array, $equipment_apply_record_array, $process_array);
                 $notification = Notification::create([
                     'permission' => 'can_document_payment_process_record',
                     'title' => $process->contract_name,

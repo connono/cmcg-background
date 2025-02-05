@@ -15,41 +15,13 @@ use App\Models\User;
 
 class ConsumableTrendsController extends Controller
 {
-    /*public function getSerialNumber(Request $request, ConsumableApplyTable $record){
-        $query = $record->query();
-        $count = $query->count();
-        if($count!==0){
-            $record = $query->orderBy('id', 'DESC')->get()->first();
-            $serial_number = intval($record->serial_number);
-            if(date("Y")==floor($serial_number/10000)) {
-                $serial_number = $serial_number+1;
-            } else {
-                $serial_number = date("Y")*10000+1;
-            }
-        } else {
-            $serial_number = date("Y")*10000+1;
-        }
-        while(\Cache::has('consumable_serial_number_'.$serial_number)){
-            $serial_number++;
-        }
-        $cacheKey = 'consumable_serial_number_'.$serial_number;
-        $expiredAt = now()->addMinutes(60);
-        \Cache::put($cacheKey, ['consumable_serial_number_'=>(string)$serial_number], $expiredAt);
-        return response()->json([
-            'serial_number' => (string)$serial_number,
-            'expired_at' => $expiredAt->toDateTimeString(),
-            'record_serial_number' => $record->serial_number,
-        ])->setStatusCode(201);
+    public function index(Request $request) {
+        $query = ConsumableTrendsTable::query();
+        $records = $query->paginate($request->pageSize);
+        return  ConsumableTrendsResource::collection($records);
     }
 
-*/
-    public function store(Request $request){
-       /* if(!\Cache::has('consumable_serial_number_'.$request->serial_number)){
-            return response()->json([
-                'error' => 'false'
-            ])->setStatusCode(500);
-        }
-*/          
+    public function store(Request $request){        
 
         $record = ConsumableTrendsTable::create([
             "consumable_apply_id" => $request->consumable_apply_id,
@@ -104,57 +76,8 @@ class ConsumableTrendsController extends Controller
                 'link' => '/consumable/list/index/detail#update&' . $consumable_directory_table->consumable_apply_id,
                 ]);
         }
-/*
-        $notification = Notification::create([
-            'permission' => 'can_survey_equipment',
-            'title' => $record->equipment,
-            'body' => json_encode($record),
-            'category' => 'apply',
-            'n_category' => 'equipmentApplyRecord',
-            'type' => 'survey', 
-            'link' => '/apply/equipment/detail#update&' . $record->id,
-        ]);
-        $record->notification()->delete();
-        $record->notification()->save($notification);
-
-        \Cache::forget('consumable_serial_number_'.$request->serial_number);
-
-        return new ConsumableApplyResource($record);*/
     }
 
-  /*  public function index(Request $request, ConsumableApplyTable $record){
-        $query = $record->query();
-       
-        if (!is_null($request->department)) {
-            $department = Department::where('name', $request->department)->first();
-            $query = $query->where('department', $department->label);
-        }
-        if (!is_null($request->status)) {
-            
-            $query = $query->where('status', $request->status);
-            
-        }
-        if (!is_null($request->consumable)) {
-            $query = $query->where('consumable', 'like', '%'.$request->consumable.'%');
-        }
-        if (!is_null($request->apply_type)) {
-            $query = $query->where('apply_type', $request->apply_type);
-        }
-        if (!is_null($request->platform_id)) {
-            $query = $query->where('platform_id', $request->platform_id);
-        }
-        if (!is_null($request->company)) {
-            $query = $query->where('company',  'like', '%'.$request->company.'%');
-        }
-        if (!is_null($request->isPaginate)) {
-            $records = $query->paginate();
-        } else {
-            $records = $query->get();
-        }
-        
-        return  ConsumableApplyResource::collection($records);
-    }
-*/
     public function update(Request $request, ConsumableApplyTable $record){
         
             $attributes = $request->only(['platform', 'price','company']);
@@ -174,18 +97,4 @@ class ConsumableTrendsController extends Controller
         $records = ConsumableTrendsTable::where('consumable_apply_id', $request->serial_number)->orderBy('id', 'DESC')->get(); 
         return  $records;
     }
-
-    /*public function stop(Request $request, ConsumableTemporaryApply $record){
-        
-            $attributes = $request->only(['stop_reason']);
-                $attributes['status'] = '4';
-                $record->update($attributes);
-    
-
-    }
-
-    public function layout(Request $request, ConsumableTemporaryApply $record){
-        $query = $record->query();
-        return new ConsumableTemporaryApplyRecordResource($record); 
-    }*/
 }

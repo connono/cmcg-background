@@ -47,16 +47,14 @@ class PaymentDocumentController extends Controller
             $payment_process = PaymentProcess::find($payment_process_record->payment_process_id);
             $last_payment_process_record = PaymentProcessRecord::where('payment_process_id', $payment_process->id)->whereNotNull('payment_date')->first();                
             $contract = Contract::find($payment_process->contract_id);
-            if ($contract->equipment_apply_record_id) {
-                $equipment_apply_record = EquipmentApplyRecord::find($contract->equipment_apply_record_id);
-            }
+            $equipment_apply_record = EquipmentApplyRecord::where('contract_id', $contract->id)->first();
 
             $text = $payment_process->assessments_count == 0 ? '首款' : '尾款';
             
             array_push($data, [
                 'status' => $record->status,
                 'company' => $contract->contractor,
-                'equipment' => $contract->equipment_apply_record_id ? $equipment_apply_record->equipment : '',
+                'equipment' => $equipment_apply_record ? $equipment_apply_record->equipment : $contract->contract_name,
                 'price' => $contract->price,
                 'type' => $text,
                 'last_pay_date' => is_null($last_payment_process_record) ? '' : $last_payment_process_record->payment_date,
@@ -104,15 +102,13 @@ class PaymentDocumentController extends Controller
                 $payment_process = PaymentProcess::find($payment_process_record->payment_process_id);
                 $last_payment_process_record = PaymentProcessRecord::where('payment_process_id', $payment_process->id)->whereNotNull('payment_date')->first();                
                 $contract = Contract::find($payment_process->contract_id);
-                if (!is_null($contract->equipment_apply_record_id)) {
-                    $equipment_apply_record = EquipmentApplyRecord::find($contract->equipment_apply_record_id);
-                }
+                $equipment_apply_record = EquipmentApplyRecord::where('contract_id', $contract->id)->first();
 
                 $text = $payment_process->assessments_count == 0 ? '首款' : '尾款';
                 $payment_process->notification()->delete();
                 array_push($data, [
                     'company' => $contract->contractor,
-                    'equipment' => $equipment_apply_record->equipment,
+                    'equipment' => $equipment_apply_record ? $equipment_apply_record->equipment : $contract->contract_name,
                     'price' => $contract->price,
                     'type' => $text,
                     'last_pay_date' => is_null($last_payment_process_record) ? '' : $last_payment_process_record->payment_date,
@@ -285,6 +281,7 @@ class PaymentDocumentController extends Controller
         foreach ( $payment_process_records as $payment_process_record) {
             $payment_process_record->update([
                 'payment_document_id' => null,
+                'status' => 'apply',
             ]);
         }
         $record->delete();

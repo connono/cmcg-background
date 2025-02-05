@@ -9,10 +9,10 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * @return void
+     * @dsawa
      */
     public function up()
-    {
+    { 
         DB::getDoctrineSchemaManager()
         ->getDatabasePlatform()
         ->registerDoctrineTypeMapping('enum', 'string');

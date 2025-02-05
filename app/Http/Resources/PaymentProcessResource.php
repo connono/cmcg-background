@@ -19,7 +19,7 @@ class PaymentProcessResource extends JsonResource
         $contract = $this->contract_id ? Contract::find($this->contract_id) : null;
         $equipment_apply_record = $contract ? EquipmentApplyRecord::find($contract->equipment_apply_record_id) : null;
         $warehousing_date = $equipment_apply_record ? $equipment_apply_record->warehousing_date : null;
-        $install_picture = $equipment_apply_record ? $equipment_apply_record->install_picture : null;
+        $install_picture = $equipment_apply_record ? $equipment_apply_record->install_picture : $this->install_picture;
 
         return [
             "id"=> $this->id,
