@@ -15,6 +15,8 @@ class PaymentDocument extends Model
         'create_date',
         'all_price',
         'status',
+        'department',
+        'user_id',
         'excel_url',
         'user_id_1',
         'user_id_2',
@@ -22,6 +24,7 @@ class PaymentDocument extends Model
         'user_id_4',
         'user_id_5',
         'payment_document_file',
+        'reject_reason',
     ];
 
     public function paymentProcessRecords(): HasMany

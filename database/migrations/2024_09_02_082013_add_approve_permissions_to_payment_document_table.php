@@ -21,7 +21,7 @@ return new class extends Migration
         $document_manager->givePermissionTo('can_create_payment_document');
         $document_manager->givePermissionTo('can_upload_payment_document');
         $document_manager->givePermissionTo('can_delete_payment_document');
-        $functional_officer = Role::where('name', '财务科科长')->first();
+        $functional_officer = Role::where( 'name', '财务科科长')->first();
         $functional_officer->givePermissionTo('can_finance_audit_payment_document');
         $dean = Role::where('name', '院长')->first();
         $dean->givePermissionTo('can_dean_audit_payment_document');

@@ -21,8 +21,7 @@ class PaymentProcessRecordsController extends Controller
     }
 
     public function getDocumentRecordList(Request $request) {
-        $department = Department::where('name', $request->department)->first();
-        $records = PaymentProcessRecord::where('department', $department->label)->whereNull('payment_document_id')->paginate();
+        $records = PaymentProcessRecord::where('department', $request->department)->whereNull('payment_document_id')->paginate();
         return PaymentProcessRecordResource::collection($records);
     }
 
@@ -45,7 +44,7 @@ class PaymentProcessRecordsController extends Controller
         $process->update([
             'next_date' => $request->next_date,
             'current_payment_record_id' => $record->id,
-            'status' => 'apply',
+            'status' => 'wait',
         ]);
         if($process->notification()) $process->notification()->delete();
 

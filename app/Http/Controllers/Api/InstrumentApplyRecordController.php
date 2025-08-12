@@ -165,6 +165,7 @@ class InstrumentApplyRecordController extends Controller
                 $attributes = $request->only(['isAdvance']);
                 $attributes['status'] = '5';
                 $attributes['advance_status'] = '0';
+                date_default_timezone_set('Asia/Shanghai');
                 $record->notification()->delete();
                 break;
         }

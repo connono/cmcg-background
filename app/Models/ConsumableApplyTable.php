@@ -31,6 +31,7 @@ class ConsumableApplyTable extends Model
         'apply_file',                    // 申请表附件
         'in_drugstore',                  // 是否为便民药房
         'status',                        // 状态
+        'need_select',                   // 是否需要遴选    
        
     ];
 

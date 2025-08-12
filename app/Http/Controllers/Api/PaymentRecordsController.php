@@ -11,6 +11,7 @@ use App\Models\PaymentRecord;
 use App\Models\PaymentPlan;
 use App\Models\Notification;
 use App\Http\Resources\PaymentRecordResource;
+use App\Models\ApprovalRecord;
 
 class PaymentRecordsController extends Controller
 {
@@ -47,6 +48,7 @@ class PaymentRecordsController extends Controller
 
     public function update(Request $request, PaymentRecord $record){
         $plan = PaymentPlan::find($request->plan_id);
+        date_default_timezone_set('Asia/Shanghai');
         switch($request->method) {
             case 'apply':
                 $attributes = $request->only(['assessment', 'payment_voucher_file']);
@@ -75,8 +77,13 @@ class PaymentRecordsController extends Controller
                     'status' => 'audit',
                 ]);
                 $department1 = Department::where('label', $plan->department)->first();
-                $leader = Leader::find($department1->leader_id);
-                $user = User::where('name', $leader->name)->first();
+                ApprovalRecord::create([
+                    'user_id' => $request->user_id,
+                    'approve_date' => date('Y-m-d H:i:s'), 	
+                    'approve_model' => 'PaymentPlan', 	
+                    'approve_status' => 'dean_audit',
+                    'approve_model_id' => $plan->id,
+                ]);
                 $notification = Notification::create([
                     'title' => $plan->contract_name,
                     'body' => json_encode($plan),
@@ -92,8 +99,24 @@ class PaymentRecordsController extends Controller
             case 'audit':
                 $department1 = Department::where('label', $plan->department)->first();
                 $department2 = Department::where('label', '财务科')->first();
+                ApprovalRecord::create([
+                    'user_id' => $request->user_id,
+                    'approve_date' => date('Y-m-d H:i:s'), 	
+                    'approve_model' => 'PaymentPlan', 	
+                    'approve_status' => 'audit', 	
+                    'approve_model_id' => $plan->id,
+                ]);
                 if ($department1->leader_id === $department2->leader_id) {
+                    $leader = Leader::find($department1->leader_id);
+                    $user = User::where('name', $leader->name)->first();
                     $plan->update(['status' => 'process']);
+                    ApprovalRecord::create([
+                        'user_id' => $user->id,
+                        'approve_date' => date('Y-m-d H:i:s'), 	
+                        'approve_model' => 'PaymentPlan', 	
+                        'approve_status' => 'finance_dean_audit', 
+                        'approve_model_id' => $plan->id,	
+                    ]);
                     $notification = Notification::create([
                         'permission' => 'can_process_payment_record',
                         'title' => $plan->contract_name,
@@ -106,7 +129,6 @@ class PaymentRecordsController extends Controller
                     $plan->notification()->delete();
                     $plan->notification()->save($notification);
                 } else {
-                    
                     $leader = Leader::find($department2->leader_id);
                     $user = User::where('name', $leader->name)->first();
                     $plan->update(['status' => 'finance_dean_audit']);
@@ -125,6 +147,13 @@ class PaymentRecordsController extends Controller
                 break;
             case 'finance_dean_audit':
                 $plan->update(['status' => 'process']);
+                ApprovalRecord::create([
+                    'user_id' => $request->user_id,
+                    'approve_date' => date('Y-m-d H:i:s'), 	
+                    'approve_model' => 'PaymentPlan', 	
+                    'approve_status' => 'finance_dean_audit', 
+                    'approve_model_id' => $plan->id,	
+                ]);
                 $notification = Notification::create([
                     'permission' => 'can_process_payment_record',
                     'title' => $plan->contract_name,
@@ -159,7 +188,7 @@ class PaymentRecordsController extends Controller
                     'records_count' => $records_count,
                     'assessments_count' => $assessments_count, 
                 ]);
-                $department = Department::where('label', $plan->deparment)->first();
+                $department = Department::where('label', $plan->department)->first();
                 $notification = Notification::create([
                     'department' => $department->id,
                     'title' => $plan->contract_name,
@@ -184,7 +213,7 @@ class PaymentRecordsController extends Controller
             'assessment' => null,
             'payment_voucher_file' => null,
         ]);
-        $department = Department::where('label', $plan->deparment)->first();
+        $department = Department::where('label', $plan->department)->first();
         $notification = Notification::create([
             'department' => $department->id,
             'title' => $plan->contract_name,

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ConsumableNetController;
+use App\Http\Controllers\Api\ConsumableSelectedNetController;
 use App\Http\Controllers\Api\ContractController;
 use App\Http\Controllers\Api\LeaderController;
 use App\Http\Controllers\Api\PaymentDocumentController;
@@ -27,6 +28,11 @@ use App\Http\Controllers\Api\ConsumableTemporaryApplyController;
 use App\Http\Controllers\Api\ConsumableApplyController;
 use App\Http\Controllers\Api\ConsumableDirectoryController;
 use App\Http\Controllers\Api\ConsumableTrendsController;
+use App\Http\Controllers\Api\ApprovalRecordController;
+use App\Models\PaymentDocument;
+use App\Http\Controllers\Api\WorkflowController;
+use App\Http\Controllers\Api\ConsumableController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -298,6 +304,18 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         ->name('consumable.net.index'); 
     Route::get('consumable/net/select', [ConsumableNetController::class, 'select'])
         ->name('consumable.net.select');
+    Route::get('consumable/select/net/index', [ConsumableSelectedNetController::class, 'index'])
+        ->name('consumable.select.net.index');
+    Route::post('consumable/select/net/bulkInsert', [ConsumableSelectedNetController::class, 'bulkInsert'])
+        ->name('consumable.select.net.bulkInsert');
+    Route::get('approval/record/getItem', [ApprovalRecordController::class, 'getItem'])
+        ->name('approval.record.getItem');
+    Route::get('approval/record/getList', [ApprovalRecordController::class, 'getList'])
+        ->name('approval.record.getList');
+    Route::post('approval/record/create', [ApprovalRecordController::class, 'create'])
+        ->name('approval.record.create');
+    Route::post('payment/document/record/reject/{record}', [PaymentDocumentController::class, 'reject'])
+        ->name('payment.document.record.reject');
     Route::middleware('auth:api')->group(function() {
         // 当前登录用户信息
         Route::get('user', [UsersController::class, 'me'])
@@ -305,4 +323,30 @@ Route::prefix('v1')->name('api.v1.')->group(function() {
         Route::get('users', [UsersController::class, 'index'])
             ->name('user.list');
     });
+
+    // 耗材管理路由
+    Route::get('consumables/current', [ConsumableController::class, 'getCurrentConsumables'])
+    ->name('consumables.current');
+    Route::get('consumables/history', [ConsumableController::class, 'getHistoricalSnapshots'])
+        ->name('consumables.history');
+    Route::get('consumables/active', [ConsumableController::class, 'getCurrentStateConsumables'])
+        ->name('consumables.active');
+    Route::post('consumables', [ConsumableController::class, 'store'])
+        ->name('consumables.store');    
+    Route::get('consumables/{consumable}', [ConsumableController::class, 'show'])
+        ->name('consumables.show');
+    Route::get('/consumables/{consumable}/snapshot/{snapshot}', [ConsumableController::class, 'getSpecificSnapshot'])
+        ->name('consumables.snapshot');
+    Route::patch('consumables/{consumable}', [ConsumableController::class, 'update'])
+        ->name('consumables.update');
+});
+
+Route::prefix('workflows')->group(function () {
+    Route::get('/definitions', [WorkflowController::class, 'getDefinitions']);
+    Route::post('/deploy', [WorkflowController::class, 'deploy']);
+    Route::get('/{name}', [WorkflowController::class, 'getWorkflow']);
+    Route::post('/start', [WorkflowController::class, 'startProcess']);
+    Route::get('/tasks', [WorkflowController::class, 'getTasks']);
+    Route::post('/tasks/{taskId}/complete', [WorkflowController::class, 'completeTask']);
+    Route::get('/instances', [WorkflowController::class, 'getProcessInstances']);
 });

@@ -13,6 +13,7 @@ use App\Http\Resources\ContractResource;
 use App\Models\EquipmentApplyRecord;
 use App\Models\InstrumentApplyRecord;
 use App\Models\Notification;
+use App\Models\ApprovalRecord;
 
 class ContractController extends Controller
 {
@@ -164,8 +165,10 @@ class ContractController extends Controller
     }
 
     public function update(Request $request, Contract $contract){
+        
         switch($request->method){
             case 'approve':
+                $user = User::find(id: $request->user_id);
                 $attributes = ['status' => 'upload'];
                 $contract->update($attributes);
                 $department = Department::where('acronym', $contract->department_source)->first();
@@ -178,6 +181,14 @@ class ContractController extends Controller
                     'type' => 'upload',
                     'link' => '/purchase/contract/detail#' . $contract->id,
                     'department_id' => $department->id,
+                ]);
+                date_default_timezone_set('Asia/Shanghai');
+                ApprovalRecord::create([
+                    'user_id' => $user->id,
+                    'approve_date' => date('Y-m-d H:i:s'), 	
+                    'approve_model' => 'Contract',
+                    'approve_model_id' => $contract->id, 	
+                    'approve_status' => 'approve', 	
                 ]);
                 $contract->notification()->delete();
                 $contract->notification()->save($notification);

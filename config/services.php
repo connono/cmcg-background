@@ -31,4 +31,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'camunda' => [
+        'url' => env('CAMUNDA_API_URL', 'http://10.10.0.27:9999/engine-rest'),
+        'username' => env('CAMUNDA_USERNAME', 'demo'),
+        'password' => env('CAMUNDA_PASSWORD', 'demo'),
+    ],
+
 ];

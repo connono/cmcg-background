@@ -49,7 +49,10 @@ class ConsumableNetController extends Controller
         if (!is_null($request->net_status)) {
             $query = $query->where('net_status', $request->net_status);
         }
-                $query = $query->orderBy('price', direction: 'asc');
+        if (!is_null($request->consumable_encoding)) {
+            $query = $query->where('consumable_encoding', 'like', '%'.$request->consumable_encoding.'%');
+        }
+        $query = $query->orderBy('price', direction: 'asc');
 
         if (!is_null($request->is_download)) {
             if($request->is_download == 'true') {
@@ -62,15 +65,80 @@ class ConsumableNetController extends Controller
 
     public function select(Request $request) {
         $original_net = ConsumableNet::where('product_id', $request->product_id)->first();
+        
+        // 计算原始net的最低价格（确保不为0）
+        $original_price = $original_net->price > 0 ? $original_net->price : PHP_FLOAT_MAX;
+        $original_tempory_price = $original_net->tempory_price > 0 ? $original_net->tempory_price : PHP_FLOAT_MAX;
+        $original_lowest_price = min($original_price, $original_tempory_price);
+        
+        // 如果两个价格都是0或不存在，设置一个默认值
+        if ($original_lowest_price == PHP_FLOAT_MAX) {
+            $original_lowest_price = 0;
+        }
+        
+        // 获取同一child_directory下的所有净
         $nets = ConsumableNet::where('child_directory', $original_net->child_directory)->get();
-        $selected_nets = collect();
-        foreach($nets as $net){
-            if($net->price != 0 && $net->price < $request->price) {
-                if($selected_nets->where('price', $net->price)->where('manufacturer', $net->manufacturer)->count() === 0) {
-                    $selected_nets->push($net);
+        
+        // 用于存储结果的数组，以公司名称+最低价为键避免重复
+        $unique_nets = [];
+        
+        // 统计以限价和中选价作为最低价格的记录数
+        $tempory_price_count = 0;
+        $price_count = 0;
+        
+        foreach ($nets as $net) {
+            // 检查价格是否有效（>0）
+            $price_valid = $net->price > 0;
+            $tempory_price_valid = $net->tempory_price > 0;
+            
+            // 跳过两个价格都无效的情况
+            if (!$price_valid && !$tempory_price_valid) {
+                continue;
+            }
+            
+            // 计算当前net的最低价格
+            $price = $price_valid ? $net->price : PHP_FLOAT_MAX;
+            $tempory_price = $tempory_price_valid ? $net->tempory_price : PHP_FLOAT_MAX;
+            $lowest_price = min($price, $tempory_price);
+            
+            // 跳过无效价格
+            if ($lowest_price == PHP_FLOAT_MAX) {
+                continue;
+            }
+            
+            // 只选择价格低于原始net的项目
+            if ($original_lowest_price > 0 && $lowest_price < $original_lowest_price) {
+                // 使用公司+最低价格作为唯一标识
+                $key = $net->company . '_' . $lowest_price;
+                
+                if (!isset($unique_nets[$key])) {
+                    $net->real_price = $lowest_price; // 添加一个额外属性用于排序
+                    
+                    // 判断最低价格是限价还是中选价
+                    if ($lowest_price == $tempory_price) {
+                        $net->price_type = 'tempory';
+                        $tempory_price_count++;
+                    } else {
+                        $net->price_type = 'normal';
+                        $price_count++;
+                    }
+                    
+                    $unique_nets[$key] = $net;
                 }
             }
         }
-        return ConsumableNetResource::collection($selected_nets);
+        
+        // 将结果转为集合并按最低价格排序
+        $selected_nets = collect(array_values($unique_nets))->sortBy('real_price');
+        
+        // 返回结果和统计数据
+        return response()->json([
+            'data' => ConsumableNetResource::collection($selected_nets),
+            'statistics' => [
+                'tempory_price_count' => $tempory_price_count,
+                'price_count' => $price_count,
+                'total' => $tempory_price_count + $price_count
+            ]
+        ]);
     }
 }

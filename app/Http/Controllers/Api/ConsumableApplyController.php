@@ -6,10 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Http\Resources\ConsumableApplyResource;
-use App\Models\Department;
 use App\Models\ConsumableApplyTable;
 use App\Models\Notification;
-
+use App\Models\Department;
+use App\Models\Leader;
+use App\Models\User;
 
 class ConsumableApplyController extends Controller
 {
@@ -69,56 +70,36 @@ class ConsumableApplyController extends Controller
             "in_drugstore" => $request->in_drugstore,
         ]);
         $record->serial_number = $request->serial_number;
-        if($request->final == '1'){
-            $record->status = '3';
-            $record->save();
-        }else{
-            if($request->in_drugstore == '0'){
-                $record->status = '2';
-                $record->save();
-                $notification = Notification::create([
-                    'permission' => 'can_purchase_consumable_record',
-                    'title' => $record->consumable,
-                    'body' => json_encode($record),
-                    'category' => 'consumable',
-                    'n_category' => 'consumable_apply',
-                    'type' => 'engineer_approve', 
-                    'link' => '/consumable/list/apply/detail#update&' . $record->serial_number,
-                ]);
-                $record->notification()->delete();
-                $record->notification()->save($notification);
-            }else{
-                if($request->apply_type == '0' || $request->apply_type == '4'){
-                    $record->status = '2';
-                    $record->save();
-                    $notification = Notification::create([
-                        'permission' => 'can_purchase_consumable_record',
-                        'title' => $record->consumable,
-                        'body' => json_encode($record),
-                        'category' => 'consumable',
-                        'n_category' => 'consumable_apply',
-                        'type' => 'engineer_approve', 
-                        'link' => '/consumable/list/apply/detail#update&' . $record->serial_number,
-                    ]);
-                    $record->notification()->delete();
-                    $record->notification()->save($notification);
-                }else{
-                    $record->status = '0';
-                    $record->save();
-                    $notification = Notification::create([
-                        'permission' => 'can_purchase_consumable_record',
-                        'title' => $record->consumable,
-                        'body' => json_encode($record),
-                        'category' => 'consumable',
-                        'n_category' => 'consumable_apply',
-                        'type' => 'buy', 
-                        'link' => '/consumable/list/apply/detail#update&' . $record->serial_number,
-                    ]);
-                    $record->notification()->delete();
-                    $record->notification()->save($notification);
-                }
-            } 
+        $record->save();
+        if($request->need_select == 'true'){
+            
+        } else if($request->need_select == 'false') {
+
         }
+        // if($request->final == '1'){
+        //     $record->status = '3'; // 最终状态保持不变
+        // } else {
+        //     // 简化逻辑：非最终状态直接进入分管领导审核
+        //     $record->status = '2'; // 原状态2改为分管领导审核状态
+        //     $record->save();
+            
+        //     $department = Department::where('label', '医学工程科')->first();
+        //     $leader = Leader::find($department->leader_id);
+        //     $user = User::where('name', $leader->name)->first();
+        //     // 创建分管领导通知
+        //     $notification = Notification::create([
+        //         'user_id' => $user->id,
+        //         'title' => $record->consumable,
+        //         'body' => json_encode($record),
+        //         'category' => 'consumable',
+        //         'n_category' => 'consumable_apply',
+        //         'type' => 'dean_audit', // 通知类型调整为分管审核
+        //         'link' => '/consumable/list/apply/detail#dean_audit&' . $record->serial_number,
+        //     ]);
+            
+        //     $record->notification()->delete();
+        //     $record->notification()->save($notification);
+        // }
 
         \Cache::forget('consumable_serial_number_'.$request->serial_number);
 
@@ -156,56 +137,36 @@ class ConsumableApplyController extends Controller
     }
 
     public function update(Request $request, ConsumableApplyTable $record){
-        if($request->method === 'approve') {
-            if($request->approve == '0'){  //审批通不过
-                $attributes['status'] = '0';
-                $record->update($attributes);
+        if($request->method === 'dean_audit') { // 方法标识改为分管审核
+            if($request->approve == '0'){  // 审批不通过
+                $record->update(['status' => '0']);
+                
                 $notification = Notification::create([
                     'permission' => 'can_purchase_consumable_record',
                     'title' => $record->consumable,
                     'body' => json_encode($record),
                     'category' => 'consumable',
                     'n_category' => 'consumable_apply',
-                    'type' => 'buy', 
+                    'type' => 'reject', // 新增驳回类型
                     'link' => '/consumable/list/apply/detail#update&' . $record->serial_number,
                 ]);
-                $record->notification()->delete();
-                $record->notification()->save($notification);
-            }elseif($request->approve == '1'){ //审核通过
-                $attributes['status'] = '2';
-                $record->update($attributes);
-                $notification = Notification::create([
-                    'permission' => 'can_engineer_approve_consumable_record',
-                    'title' => $record->consumable,
-                    'body' => json_encode($record),
-                    'category' => 'consumable',
-                    'n_category' => 'consumable_apply',
-                    'type' => 'engineer_approve', 
-                    'link' => '/consumable/list/apply/detail#update&' . $record->serial_number,
-                ]);
-                $record->notification()->delete();
-                $record->notification()->save($notification);
-            }    
-        } else if ($request->method === 'engineer_approve') {
-            if($request->approve == '0'){  //审批通不过
-                $attributes['status'] = '0';
-                $record->update($attributes);
+            } elseif($request->approve == '1'){ // 审核通过
+                $record->update(['status' => '3']); // 直接进入完成状态
+                
+                // 创建采购通知
                 $notification = Notification::create([
                     'permission' => 'can_purchase_consumable_record',
                     'title' => $record->consumable,
                     'body' => json_encode($record),
                     'category' => 'consumable',
                     'n_category' => 'consumable_apply',
-                    'type' => 'buy', 
-                    'link' => '/consumable/list/apply/detail#update&' . $record->serial_number,
+                    'type' => 'purchase',
+                    'link' => '/consumable/list/apply/detail#purchase&' . $record->serial_number,
                 ]);
-                $record->notification()->delete();
-                $record->notification()->save($notification);
-            }elseif($request->approve == '1'){ //审核通过
-                $attributes['status'] = '3';
-                $record->update($attributes);
-                $record->notification()->delete();
-            }    
+            }
+            
+            $record->notification()->delete();
+            $record->notification()->save($notification);
         }
         return new ConsumableApplyResource($record);
     }
@@ -213,13 +174,4 @@ class ConsumableApplyController extends Controller
         $record = ConsumableApplyTable::where('serial_number', $request->serial_number)->orderBy('id', 'DESC')->first();
         return new ConsumableApplyResource($record);
     }
-
-    // public function stop(Request $request, ConsumableTemporaryApply $record){
-        
-    //         $attributes = $request->only(['stop_reason']);
-    //             $attributes['status'] = '4';
-    //             $record->update($attributes);
-    
-
-    // }
 }

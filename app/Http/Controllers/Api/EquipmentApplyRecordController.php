@@ -11,6 +11,7 @@ use App\Models\Contract;
 use App\Http\Resources\EquipmentApplyRecordResource;
 use App\Http\Requests\Api\EquipmentApplyRecordRequest;
 use App\Models\Notification;
+use App\Models\ApprovalRecord;
 
 class EquipmentApplyRecordController extends Controller
 {
@@ -233,6 +234,14 @@ class EquipmentApplyRecordController extends Controller
                     $r->notification()->delete();
                     $r->notification()->save($notification);
                 });
+                date_default_timezone_set('Asia/Shanghai');
+                ApprovalRecord::create([
+                    'user_id' => $request->user_id,
+                    'approve_date' => date('Y-m-d H:i:s'),
+                    'approve_model_id' => $record->id, 	
+                    'approve_model' => 'EquipmentApplyRecord', 	
+                    'approve_status' => 'engineer_approve', 	
+                ]);
                 break;
             case 'warehouse':
                 $records = EquipmentApplyRecord::where('contract_id', $record->contract_id)->get();
